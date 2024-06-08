@@ -16,12 +16,6 @@ export class HealthCheckController extends BaseController {
   constructor() {
     super();
   }
-  /**
-   * @swagger
-   * /tpl-serviceability/api/v1/health:
-   *
-   *
-   */
 
   @httpGet("/")
   public async checkHealth(req: Request, res: Response): Promise<void> {
@@ -60,7 +54,7 @@ export class HealthCheckController extends BaseController {
   }
   async checkAeroAlive(serviceConfig: ServiceConfig): Promise<string> {
     const tenantIds = Object.keys(serviceConfig);
-    const client = _.get(AerospikeAdapter, ["aerospikeClient", tenantIds[0], "conn"]);
+    const client = _.get(AerospikeAdapter, ["aerospikeClient", "conn"]);
     return (await client.isConnected()) ? "up" : "down";
   }
   async checkDBAlive(serviceConfig: ServiceConfig): Promise<[string, any]> {

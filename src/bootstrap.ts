@@ -30,7 +30,7 @@ async function init() {
     const serviceConfig = await getConfig();
 
     await connectToDB(serviceConfig.config_json.db_config);
-    // await connectToCache(serviceConfig.config_json.cache_config);
+    await connectToCache(serviceConfig.config_json.cache_config);
 }
 
 function initializeServer(mode: boolean) {
@@ -158,7 +158,7 @@ async function getConfig(): Promise<ServiceConfig> {
 
 async function connectToDB(dbConfig: DbConfig): Promise<void> {
     try {
-        Logger.debug("DB_CONFIG: " + dbConfig);
+        Logger.debug("DB_CONFIG: ", dbConfig);
         Logger.info("Connecting to db....");
         await createDBConn(dbConfig);
         Logger.info("Connected to db.");
@@ -174,7 +174,7 @@ async function connectToCache(cacheConfig: CacheConfig): Promise<void> {
         Logger.info("Connecting to Aerospike....");
         await AerospikeAdapter.init(cacheConfig, {});
     } catch (err) {
-        Logger.error(err, "", "MySql connection error. Please make sure MySql is running.");
+        Logger.error(err, "", "Aerospike connection error. Please make sure Aerospike is running.");
         process.exit();
     }
 }
