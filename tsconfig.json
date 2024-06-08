@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+      "module": "CommonJS",
+      "target": "es6",
+      "lib": ["es6", "dom"],
+      "noImplicitAny": false,
+      "sourceMap": true,
+      "resolveJsonModule": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "moduleResolution": "Node",
+      "noUnusedLocals": false,
+      "esModuleInterop": true,
+      "outDir": "./dist"
+    },
+    "ts-node": {
+      "esm": true
+    },
+    "include": ["src/**/*.ts", "src/services/.temp"],
+    "compileOnSave": false,
+    "exclude": ["node_modules"]
+  }
