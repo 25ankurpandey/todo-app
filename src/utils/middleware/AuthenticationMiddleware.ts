@@ -1,5 +1,6 @@
 import express from "express";
 import { ReqContextManager } from "../context/ReqContextManager";
+import { ContextManager } from "../context/ContextManager";
 import { Logger } from "../logging/Logger";
 const jwt = require("jsonwebtoken");
 import { ErrUtils } from "../ErrUtils";
@@ -54,6 +55,7 @@ export class AuthenticationMiddleware {
                         ErrUtils.throwSystemError("AUTHENTICATION_ERROR", { message: "JWT verification error" });
                     }
                 }
+                ContextManager.setAttribute(ReqContextManager.USER_META, decoded.data)
                 next();
             });
         }

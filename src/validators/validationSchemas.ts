@@ -9,6 +9,13 @@ export const CreateUserValidationSchema = Joi.object({
     mobile: Joi.string().required()
 }).options({ abortEarly: false });
 
+export const UpdateUserValidationSchema = Joi.object({
+    first_name: Joi.string(),
+    last_name: Joi.string(),
+    password: Joi.string().min(8),
+    mobile: Joi.string()
+}).options({ abortEarly: false });
+
 export const UserLoginValidationSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),

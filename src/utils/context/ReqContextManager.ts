@@ -14,6 +14,7 @@ export class ReqContextManager {
     public static TIMESTAMP = "x-timestamp";
     public static IP_ADDRESS = "ipaddress";
     public static REQ_URL = "requrl";
+    public static USER_META = "usermeta";
     private static authorization = "authorization";
     private static urlsToBeAuthenticated: string[];
     private static urlsExcludedFromAuthentication: string[];
@@ -131,5 +132,9 @@ export class ReqContextManager {
 
     public static getToken(): string {
         return ReqContextManager.getAttribute(ReqContextManager.authorization);
+    }
+
+    public static getUserMeta(): string {
+        return ReqContextManager.getAttribute(ReqContextManager.USER_META);
     }
 }

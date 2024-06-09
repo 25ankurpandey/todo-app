@@ -39,6 +39,21 @@ export class UserService extends BaseService {
         }
     }
 
+    async updateUser(reqBody: UserInput): Promise<any> {
+        try {
+            Logger.info("User update...");
+            if(reqBody.password) {
+                const hashedPassword = await hashPassword(reqBody.password);
+                reqBody.password = hashedPassword;
+            }
+            return await this.userDal.update(reqBody);
+        }
+        catch (err) {
+            Logger.error(err, "", "UPDATE_USER_ERROR");
+            ErrUtils.throwSystemError("SYSTEM_ERR", { message: err.message });
+        }
+    }
+
     async userLogin(reqBody: UserInput): Promise<any> {
         try {
             Logger.info("User login...");
