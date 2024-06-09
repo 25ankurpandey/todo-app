@@ -12,6 +12,7 @@ import { ReqContextManager } from "./utils/context/ReqContextManager";
 import { Logger } from "./utils/logging/Logger";
 import { HttpClient } from "./utils/httpClient/HttpClient";
 import { ReqResMiddleware } from "./utils/middleware/ReqResMiddleware";
+import { AuthenticationMiddleware } from "./utils/middleware/AuthenticationMiddleware";
 import { Constants } from "./constants/Constants";
 import { ServiceConfig, DbConfig, CacheConfig } from "./interfaces/Configs";
 import swaggerUI = require("swagger-ui-express");
@@ -61,9 +62,14 @@ function initializeServer(mode: boolean) {
         );
         ContextManager.init(app);
         HttpClient.init("todo-svc");
-        ReqContextManager.registerWithReqContextManager(app);
-        //   AuthMiddleware.init(AuthorizationConstants.AuthzConfig);
-        //   app.use(AuthMiddleware.checkAuth);
+        ReqContextManager.registerWithReqContextManager(app, 
+            [
+                `${Constants.Context_Path}/user/logout`
+            ],
+            [
+                `${Constants.Context_Path}/user/login`
+            ]);
+        app.use(AuthenticationMiddleware.checkAuthentication);
         app.use(bodyParser.json({ limit: "15mb" }));
         app.use(ReqResMiddleware.reqResLog);
         app.use(

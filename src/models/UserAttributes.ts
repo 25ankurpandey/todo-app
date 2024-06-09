@@ -2,8 +2,8 @@ import { DataTypes, Model, Optional } from "sequelize";
 
 interface UserAttributes {
   id: number;
-  firstname: string;
-  lastname: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
   mobile: string;
@@ -15,8 +15,8 @@ export type UserOutput = Required<UserAttributes>
 export const UserClassFactory = function () {
     return class User extends Model<UserAttributes, UserInput> implements UserAttributes {
         public id!: number;
-        public firstname!: string;
-        public lastname!: string;
+        public first_name!: string;
+        public last_name!: string;
         public email!: string;
         public password!: string;
         public mobile!: string;
@@ -29,11 +29,11 @@ export const UserModel = {
     autoIncrement: true,
     primaryKey: true,
   },
-  firstname: {
+  first_name: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  lastname: {
+  last_name: {
     type: DataTypes.STRING,
     allowNull: false,
   },

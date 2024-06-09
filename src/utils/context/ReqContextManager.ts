@@ -14,10 +14,19 @@ export class ReqContextManager {
     public static TIMESTAMP = "x-timestamp";
     public static IP_ADDRESS = "ipaddress";
     public static REQ_URL = "requrl";
+    private static authorization = "authorization";
+    private static urlsToBeAuthenticated: string[];
+    private static urlsExcludedFromAuthentication: string[];
+    private static authenticationRequired = "authenticationRequired";
 
-    public static registerWithReqContextManager(express: express.Application) {
+    public static registerWithReqContextManager(express: express.Application, urlsToBeAuthenticated: string[], urlsExcludedFromAuthentication: string[]) {
+        ValidationUtils.validateIsNotNullOrUndefined(urlsExcludedFromAuthentication,
+            "urlsExcludedFromAuthentication");
+
+        ReqContextManager.urlsToBeAuthenticated = urlsToBeAuthenticated;
+        ReqContextManager.urlsExcludedFromAuthentication = urlsExcludedFromAuthentication;
         express.use((req: Request, res: Response, next: NextFunction) => {
-            ReqContextManager.populateFromHeaders(req);
+            ReqContextManager.populateFromHeaders(req, true);
             ContextManager.setAttribute(ReqContextManager.IP_ADDRESS,
                 req.headers[ReqContextManager.IP_ADDRESS] || requestIp.getClientIp(req));
             ContextManager.setAttribute(ReqContextManager.REQ_URL, req.url);
@@ -25,11 +34,12 @@ export class ReqContextManager {
         });
     }
 
-    public static populateFromHeaders(req: any): void {
+    public static populateFromHeaders(req: any, checkUrlsToBeExcluded: boolean): void {
         ReqContextManager.addTraceAttributes(req);
         ReqContextManager.setAttribute(req, ReqContextManager.X_USER);
         ReqContextManager.setAttribute(req, ReqContextManager.CALLER, true); // Allow unknown caller
         ReqContextManager.setAttribute(req, ReqContextManager.TIMESTAMP);
+        ReqContextManager.validateMandatoryHeaders(req, checkUrlsToBeExcluded);
     }
 
     private static setAttribute(req: any, attribName: string, ignoreMissingHeaders = false) {
@@ -42,6 +52,27 @@ export class ReqContextManager {
         }
 
         ContextManager.setAttribute(attribName, attribValue);
+    }
+
+    private static validateMandatoryHeaders(req: Request, checkUrlsToBeExcluded = true) {
+        if (checkUrlsToBeExcluded) {
+            for (const urlToExclude of ReqContextManager.urlsExcludedFromAuthentication) {
+                const url: string = req.url;
+                if (url.startsWith(urlToExclude)) {
+                    return;
+                }
+            }
+        }
+
+        if (req.url && ReqContextManager.urlsToBeAuthenticated.length > 0) {
+            for (const url of ReqContextManager.urlsToBeAuthenticated) {
+                if (req.url.startsWith(url)) {
+                    ReqContextManager.setAttribute(req, ReqContextManager.authorization);
+                    ContextManager.setAttribute(ReqContextManager.authenticationRequired, true);
+                    break;
+                }
+            }
+        }
     }
 
     public static validateHeaders(req: Request, headersToBeValidated: string[]) {
@@ -88,5 +119,17 @@ export class ReqContextManager {
 
     public static getRequestId(): any {
         return ReqContextManager.getAttribute(ReqContextManager.X_TRACKER);
+    }
+
+    public static getAuthenticationRequired(): boolean {
+        return ContextManager.getAttribute(ReqContextManager.authenticationRequired);
+    }
+
+    public static getUrlsToBeAuthenticated(): string[] {
+        return ReqContextManager.urlsToBeAuthenticated;
+    }
+
+    public static getToken(): string {
+        return ReqContextManager.getAttribute(ReqContextManager.authorization);
     }
 }
