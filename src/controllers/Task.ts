@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { inject } from "inversify";
 import { Logger } from "../utils/logging/Logger";
-import { controller, httpDelete, httpPatch, httpPost, httpPut } from "inversify-express-utils";
+import { controller, httpDelete, httpGet, httpPatch, httpPost, httpPut } from "inversify-express-utils";
 import { Constants } from "../constants/Constants";
 import { BaseController } from "./Base";
 import { ErrUtils } from "../utils/ErrUtils";
 import { TaskService } from "../services/TaskService";
-import { CreateTaskValidationSchema, UpdateTaskValidationSchema } from "../validators/validationSchemas";
+import { CreateTaskValidationSchema, UpdateTaskValidationSchema, FiltersValidationSchema } from "../validators/validationSchemas";
 
 @controller(`${Constants.Context_Path}/task`)
 
@@ -15,6 +15,23 @@ export class TaskController extends BaseController {
         @inject(TaskService)
         private taskService: TaskService) {
         super();
+    }
+
+    @httpGet("/")
+    public async getTask(req: Request, res: Response): Promise<void> {
+        try {
+            const query = await FiltersValidationSchema.validateAsync(req.query);
+            const tasks = await this.taskService.fetchTask(query);
+            res.send(tasks);
+        } catch (err) {
+            if (err.name === "ValidationError") {
+                ErrUtils.throwValidationError("Validation error", err.details);
+            } else {
+                Logger.error(err, "400", "CREATE_TASK_ERROR");
+                throw err;
+            }
+
+        }
     }
 
     @httpPut("/create")

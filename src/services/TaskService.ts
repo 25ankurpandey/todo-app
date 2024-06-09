@@ -8,6 +8,7 @@ import { TasksInput } from "../models/Tasks";
 import { hashPassword, validatePassword, generateToken } from "../utils/util";
 import { AuthenticationMiddleware } from "../utils/middleware/AuthenticationMiddleware";
 import { ReqContextManager } from "../utils/context/ReqContextManager";
+import { Status } from "../interfaces/Task";
 
 @provideSingleton(TaskService)
 export class TaskService extends BaseService {
@@ -19,6 +20,20 @@ export class TaskService extends BaseService {
         public userDal: UserDal
     ) {
         super();
+    }
+
+    async fetchTask(query: any): Promise<any> {
+        try {
+            Logger.info("Fetch task...");
+            const userId = ReqContextManager.getUserMeta().user_id;
+            const tasks = await this.taskDal.getAll(userId, query);
+            const statusFilters = Object.values(Status);
+            return { tasks: tasks, status_filter: statusFilters };
+        }
+        catch (err) {
+            Logger.error(err, "", "FETCH_TASK_ERROR");
+            ErrUtils.throwSystemError("SYSTEM_ERR", { message: err.message });
+        }
     }
 
     async createTask(reqBody: TasksInput): Promise<any> {

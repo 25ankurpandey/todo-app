@@ -64,11 +64,8 @@ function initializeServer(mode: boolean) {
         HttpClient.init("todo-svc");
         ReqContextManager.registerWithReqContextManager(app, 
             [
-                `${Constants.Context_Path}/user/logout`,
-                `${Constants.Context_Path}/user/update`,
-                `${Constants.Context_Path}/task/create`,
-                `${Constants.Context_Path}/task/update`,
-                `${Constants.Context_Path}/task/delete`
+                `${Constants.Context_Path}/user`,
+                `${Constants.Context_Path}/task`
             ],
             [
                 `${Constants.Context_Path}/user/login`

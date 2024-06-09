@@ -53,3 +53,10 @@ export const UpdateTaskValidationSchema = Joi.object({
         .default(Status.PENDING),
 }).unknown(true)
     .options({ abortEarly: false });
+
+export const FiltersValidationSchema = Joi.object({
+    created_at: Joi.date(),
+    status: Joi.string()
+        .valid(...Object.values(Status))
+}).unknown(true)
+    .options({ abortEarly: false });
