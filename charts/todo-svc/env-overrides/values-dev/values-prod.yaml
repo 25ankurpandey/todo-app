@@ -1,0 +1,344 @@
+environment: dev
+namespace: tplserviceabilitysvc-dev
+# deployments is an array. Hence supports multiple deployments.
+deployments:
+  - name: tplserviceabilitysvc
+    # canary:
+    #   enabled: true
+    #   replicas: 1 # This is always recommended to be 1
+    #   labels:
+    #     kind: canary
+    podLabels:
+      app: tplserviceabilitysvc
+    # containers is an array. Hence supports multiple containers.
+    containers:
+      - name: tplserviceabilitysvc
+        containerPortName: tpls-port
+        containerPort: 3000
+        internalServicePort: 3000
+        externalNodePort: 19721
+        servicePortName: tpls-port
+        imageName: tplserviceabilitysvc
+        imagePullPolicy: Always
+        imageTag: v0.5.39
+        configMapName: tplserviceabilitysvc-configmap
+        secretName: tplserviceabilitysvc-secrets
+        secretsFileName: tplserviceabilitysvc-secrets-file
+        livenessProbe:
+          httpGet:
+            path: /tpl-serviceability/internal/v1/health
+            port: 3000
+          periodSeconds: 30
+          initialDelaySeconds: 200
+          successThreshold: 1
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /tpl-serviceability/internal/v1/health
+            port: 3000
+          initialDelaySeconds: 200
+          periodSeconds: 30
+          successThreshold: 1
+          failureThreshold: 2
+        resources:
+          requests:
+            cpu: 250m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 500Mi
+    rollingUpdate:
+      maxSurge: "90%"
+      maxUnavailable: "60%"
+    affinity:
+      nodeAffinityLabels:
+        - name: environment
+          value: dev-qa
+      podAntiAffinity:
+        type: required
+        labels:
+          - name: app
+            value: tplserviceabilitysvc
+    hpa:
+      native:
+        minReplicas: 1
+        maxReplicas: 1
+        targetCPUAverage: 80
+        targetMemoryAverage: 90
+        targetNamespace: tplserviceabilitysvc-dev
+        targetDeployment: tplserviceabilitysvc
+    #   requestBased:
+    #     minReplicas: 1
+    #     maxReplicas: 2
+    #     targetAverageValue: 500
+    #     targetNamespace: "tplserviceabilitysvc-dev"
+    #     targetDeployment: "tplserviceabilitysvc"
+    #     metrics:
+    #       - name: "http_requests_tplserviceabilitysvc"
+    #       #   targetGroup: ""
+    #       #   loadBalancer: "app/dev-internal-svc-alb/036f05889f309f91"
+    #       #   period: 60
+    # pdb:
+    #   minAvailable: 80%
+  - name: tplserviceabilitysvc-upload-consumer
+    # canary:
+    #   enabled: true
+    #   replicas: 1 # This is always recommended to be 1
+    #   labels:
+    #     kind: canary
+    podLabels:
+      app: tplserviceabilitysvc-consumer
+      project: ""
+      version: v1
+    #containers is an array. Hence supports multiple containers.
+    containers:
+      - name: tplserviceabilitysvc-upload-consumer
+        containerPort: 3000
+        #internalServicePort: 3000
+        #externalNodePort: 22894
+        imageName: tplserviceabilitysvc
+        imageTag: v0.5.39
+        configMapName: tplserviceabilitysvc-upload-consumer-configmap
+        secretName: tplserviceabilitysvc-secrets
+        secretsFileName: tplserviceabilitysvc-secrets-file
+        livenessProbe:
+          httpGet:
+            path: /tpl-serviceability/internal/v1/health
+            port: 3000
+          periodSeconds: 500
+          initialDelaySeconds: 35
+          successThreshold: 1
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /tpl-serviceability/internal/v1/health
+            port: 3000
+          initialDelaySeconds: 35
+          periodSeconds: 500
+          successThreshold: 1
+          failureThreshold: 2
+        resources:
+          requests:
+            cpu: 300m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1024Mi    
+    rollingUpdate:
+      maxSurge: "90%"
+      maxUnavailable: "60%"
+    affinity:
+      nodeAffinityLabels:
+        - name: environment
+          value: dev-qa
+      podAntiAffinity:
+        type: required
+        labels:
+          - name: app
+            value: tplserviceabilitysvc-upload-consumer
+    hpa:
+      # native:
+      #   minReplicas: 1
+      #   maxReplicas: 1
+      #   targetCPUAverage: 80
+      #   targetMemoryAverage: 90
+      #   targetNamespace: tplordsvc-dev
+      #   targetDeployment: tplordsvc
+      lagBased:
+        minReplicas: 1
+        maxReplicas: 3
+        targetNamespace: tplserviceabilitysvc-dev
+        targetDeployment: tplserviceabilitysvc-upload-consumer
+        targetKafkaTopicName: dev_tpl_config_upload
+        targetConsumerGroup: dev-tpl-config-upload-group
+        desiredMetricValue: 1
+cronJobs:
+  - name: tpl-serviceability-cron
+    schedule: "*/15 * * * *"
+    podLabels:
+      app: tpl-serviceability-scheduler-cron
+      type: cron
+    concurrencyPolicy: Replace
+    backoffLimit: 2
+    startingDeadlineSeconds: 270
+    successfulJobsHistoryLimit: 5
+    containers:
+      - name: serviceablityjob
+        imageName: tplserviceabilitysvc
+        imageTag: v0.5.39
+        imagePullPolicy: Always
+        configMapName: tplserviceabilityjob-configmap
+        secretName: tplserviceabilitysvc-secrets
+        secretsFileName: tplserviceabilitysvc-secrets-file
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo "UPDATE COMPLETE"
+            npm run serve-cron fetch-serviceability
+            echo "SERVICEABILITY JOB DONE"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+          limits:
+            cpu: 200m
+            memory: 250Mi
+    
+    restartPolicy: OnFailure
+    affinity:
+      nodeAffinityLabels:
+        - name: environment
+          value: dev-qa
+      podAntiAffinity:
+        type: preferred
+        labels:
+          - name: environment
+            value: dev-qa
+
+configMaps:
+  - name: tplserviceabilitysvc-configmap
+    data:
+      "conf": |
+        "DEBUG": true
+        "ENVIRONMENT": "development"
+      LOG_LEVEL: "debug"
+      ENVIRONMENT: "development"
+      NODE_ENV: "local"
+      NEWRELIC_ENABLED: true
+      APPLICATION_LOG_FORWARD_ENABLED: true
+      NEW_RELIC_APP_NAME: "TPL_SERVICEABILITY_DEV"
+      NEW_RELIC_ATTRIBUTES_ENABLED: true
+      NEW_RELIC_CAPTURE_PARAMS: true
+      NEW_RELIC_MAX_SAMPLES: 20
+      NEW_RELIC_DISTRIBUTED_TRACING: false
+      NEW_RELIC_IGNORE_SERVER_CONFIGURATION: true
+      SLA_MS: 100
+      POD_SUICIDE_ENABLED: true
+      SUICIDE_TIME_MAX_MS: 18000000
+      SUICIDE_TIME_MIN_MS: 21600000
+      REQUEST_AUDIT_ENABLED: true
+      TPL_SERVICEABILITY_SVC_PORT: 3000
+      AEROSPIKE_MAX_CONN_PER_NODE: 10
+      AEROSPIKE_READ_POLICY_TIMEOUT: 1000
+      AEROSPIKE_READ_POLICY_SOCKET_TIMEOUT: 90
+      AEROSPIKE_READ_POLICY_MAX_RETRIES: 2
+      AEROSPIKE_BATCH_POLICY_TIMEOUT: 10000
+      AEROSPIKE_WRITE_POLICY_TIMEOUT: 1000
+      AEROSPIKE_WRITE_POLICY_SOCKET_TIMEOUT: 90
+      AEROSPIKE_WRITE_POLICY_MAX_RETRIES: 0
+      AEROSPIKE_MAX_COMMANDS_IN_PROCESS: 10
+      AEROSPIKE_MAX_COMMANDS_IN_QUEUE: 50
+      TPL_SERVICEABILITY_SVC_CONFIG_SVC_HOST: "qa-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_BB2USER_HOST: "http://dev-svc.bigbasket.com"
+      TPL_HUBOPS_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_MEMBER_SVC_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_BB2COMMON_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_NAME: "tplsvc"
+      TPL_SERVICEABILITY_SVC_ENABLE_KAFKA_MODE: false
+      TPL_SERVICEABILITY_SVC_ENABLE_KAFKA_PRODUCER: false
+      KAFKA_PRODUCER_TOPIC_CLUSTER_VERSION_MAP: '{"qas_upload-callback":"v5"}'
+      KAFKA_PRODUCER_CLUSTER_VERSION_BROKERS_MAP: '{ "v5": ["10.2.0.11:9092","10.2.0.17:9092"] }'
+      CAPACITY_THRESHOLD_PERCENT: 5
+      DB_SECRET_KEY: "dev-rds-catalogue-feed-transformation-tplserviceabilitysvc-dev-v1"
+      AWS_REGION: "us-east-1"
+      AWS_ACMS_SECRET_NAME: "dev_qa-acms-tplserviceabilitysvc-dev-bigbasket-v1"
+  - name: tplserviceabilityjob-configmap
+    data:
+      "conf": |
+        "DEBUG": true
+        "ENVIRONMENT": "development"
+      LOG_LEVEL: "debug"
+      ENVIRONMENT: "development"
+      NODE_ENV: "development"
+      SLA_MS: 100
+      DM_INFO: '{"id": 7,"name": "3pl"}'
+      REQUEST_AUDIT_ENABLED: true
+      TPL_SERVICEABILITY_SVC_PORT: 3007
+      AEROSPIKE_MAX_CONN_PER_NODE: 10
+      AEROSPIKE_READ_POLICY_TIMEOUT: 1000
+      AEROSPIKE_READ_POLICY_SOCKET_TIMEOUT: 90
+      AEROSPIKE_READ_POLICY_MAX_RETRIES: 2
+      AEROSPIKE_BATCH_POLICY_TIMEOUT: 10000
+      AEROSPIKE_WRITE_POLICY_TIMEOUT: 1000
+      AEROSPIKE_WRITE_POLICY_SOCKET_TIMEOUT: 90
+      AEROSPIKE_WRITE_POLICY_MAX_RETRIES: 0
+      AEROSPIKE_MAX_COMMANDS_IN_PROCESS: 10
+      AEROSPIKE_MAX_COMMANDS_IN_QUEUE: 50
+      TPL_CRON_MONITORING_ENABLED: false
+      TPL_CRON_MONITORING_HOST: "https://detection-api-qa.bigbasket.com"
+      SERVICEABILITY_CRON_MONITORING_JOB_ID: 21
+      TPL_SERVICEABILITY_SVC_ENABLE_KAFKA_MODE: false
+      TPL_SERVICEABILITY_SVC_ENABLE_KAFKA_PRODUCER: false
+      TPL_SERVICEABILITY_SVC_NAME: "tplsvc"
+      TPL_SERVICEABILITY_SVC_BBEDGE_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_ORDER_SVC_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_MEMBER_SVC_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_CONFIG_SVC_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_BB2COMMON_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_TPL_SERVICEABILITY_SVC_HOST : "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_BB2USER_HOST: "http://dev-svc.bigbasket.com"
+      DB_SECRET_KEY: "dev-rds-catalogue-feed-transformation-tplserviceabilitysvc-dev-v1"
+      AWS_SECRETMANAGER_REGION: "us-east-1"
+      AWS_ACMS_SECRET_NAME: "dev_qa-acms-tplserviceabilitysvc-dev-bigbasket-v1"
+  - name: tplserviceabilitysvc-upload-consumer-configmap
+    data:
+      "conf": |
+        "DEBUG": true
+        "ENVIRONMENT": "development"
+      LOG_LEVEL: "debug"
+      ENVIRONMENT: "development"
+      NODE_ENV: "local"
+      NEWRELIC_ENABLED: true
+      APPLICATION_LOG_FORWARD_ENABLED: true
+      NEW_RELIC_APP_NAME: "TPL_SERVICEABILITY_DEV"
+      NEW_RELIC_ATTRIBUTES_ENABLED: true
+      NEW_RELIC_CAPTURE_PARAMS: true
+      NEW_RELIC_MAX_SAMPLES: 20
+      NEW_RELIC_DISTRIBUTED_TRACING: false
+      NEW_RELIC_IGNORE_SERVER_CONFIGURATION: true
+      SLA_MS: 100
+      CONSUMER_SUICIDE_ENABLED: true
+      SUICIDE_TIME_MAX_MS: 172800000
+      SUICIDE_TIME_MIN_MS: 86400000
+      REQUEST_AUDIT_ENABLED: true
+      TPL_SERVICEABILITY_SVC_PORT: 3000
+      AEROSPIKE_MAX_CONN_PER_NODE: 10
+      AEROSPIKE_READ_POLICY_TIMEOUT: 1000
+      AEROSPIKE_READ_POLICY_SOCKET_TIMEOUT: 90
+      AEROSPIKE_READ_POLICY_MAX_RETRIES: 2
+      AEROSPIKE_BATCH_POLICY_TIMEOUT: 10000
+      AEROSPIKE_WRITE_POLICY_TIMEOUT: 1000
+      AEROSPIKE_WRITE_POLICY_SOCKET_TIMEOUT: 90
+      AEROSPIKE_WRITE_POLICY_MAX_RETRIES: 0
+      AEROSPIKE_MAX_COMMANDS_IN_PROCESS: 10
+      AEROSPIKE_MAX_COMMANDS_IN_QUEUE: 50
+      TPL_HUBOPS_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_CONFIG_SVC_HOST: "qa-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_BB2USER_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_MEMBER_SVC_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_BB2COMMON_HOST: "http://dev-svc.bigbasket.com"
+      TPL_SERVICEABILITY_SVC_NAME: "tplsvc"
+      TPL_SERVICEABILITY_SVC_ENABLE_KAFKA_MODE: true
+      TPL_SERVICEABILITY_SVC_ENABLE_KAFKA_PRODUCER: true
+      CAPACITY_THRESHOLD_PERCENT: 5
+      SEND_STORE_COURIER_INFO_TO_HUBOPS: false
+      KAFKA_PRODUCER_TOPIC_CLUSTER_VERSION_MAP: '{"qas_upload-callback":"v5"}'
+      KAFKA_PRODUCER_CLUSTER_VERSION_BROKERS_MAP: '{ "v5": ["10.2.0.11:9092","10.2.0.17:9092"] }'
+      TPL_SERVICEABILITY_SVC_KAFKA_PRODUCER_CONFIG: '{"clientId":"tpl-serviceability-svc-dev","connectionTimeout":3000,"requestTimeout":3000,"logLevel":"NOTHING","initialRetryTime":3000,"retries":3}'
+      TPL_SERVICEABILITY_SVC_KAFKA_CONSUMER_CONFIG: '{"maxParallelHandles":1,"maxQueueSize":5,"fromBeginning":true,"autoCommit":false,"maxBytes":10485760,"clientId":"tpl-serviceability-svc-dev","brokers":["10.2.0.11:9092","10.2.0.17:9092"],"connectionTimeout":3000,"requestTimeout":3000,"logLevel":"NOTHING","retryHandlerMaxNo":3,"retryHandlerInfinite":false,"topicDetails":{ "dev_tpl_config_upload":{"handlerFileName":"configUploadHandler","groupId":"dev-tpl-config-upload-group","noOfInstances":1}}}'
+      DB_SECRET_KEY: "dev-rds-catalogue-feed-transformation-tplserviceabilitysvc-dev-v1"
+      AWS_REGION: "us-east-1"
+      AWS_ACMS_SECRET_NAME: "dev_qa-acms-tplserviceabilitysvc-dev-bigbasket-v1"
+requiredInfraDependencies:
+  name: slot-infra
+  values:
+    TPL_MYSQL_PASSWORD_TENANT_1: $TPL_MYSQL_PASSWORD_TENANT_1
+    TPL_MYSQL_PASSWORD_TENANT_2: $TPL_MYSQL_PASSWORD_TENANT_2
+    NEWRELIC_KEY: $NEW_RELIC_LICENSE_KEY
+    
+    # NOTE: nodeLabels renders the nodeSelector block.
+# nodeAffinityLabels, although can be used as an alternative to `nodeSelector`, is much more powerful than `nodeSelector`.
+
+nodeLabels:
+  environment: dev-qa
