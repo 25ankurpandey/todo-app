@@ -3,8 +3,8 @@ import { sequelizeConn } from "../db-initialization/initialize";
 import { provideSingleton } from "../ioc/ioc";
 import { TasksInput, TasksOutput } from "../models/Tasks";
 import dayjs from "dayjs";
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
