@@ -7,6 +7,7 @@ import { ErrUtils } from "../utils/ErrUtils";
 import { UserInput } from "../models/UserAttributes";
 import { hashPassword, validatePassword, generateToken } from "../utils/util";
 import { AuthenticationMiddleware } from "../utils/middleware/AuthenticationMiddleware";
+import { ReqContextManager } from "../utils/context/ReqContextManager";
 
 @provideSingleton(UserService)
 export class UserService extends BaseService {

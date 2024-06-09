@@ -4,6 +4,7 @@ import { ContextManager } from "../context/ContextManager";
 import { Logger } from "../logging/Logger";
 const jwt = require("jsonwebtoken");
 import { ErrUtils } from "../ErrUtils";
+import { UserDal } from "../../repositories/UserDal";
 
 let tokenWhitelist: string[] = [];
 
@@ -46,7 +47,7 @@ export class AuthenticationMiddleware {
             }
 
             // Verify JWT token
-            jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+            jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
                 if (err) {
                     if (err.name === 'TokenExpiredError') {
                         ErrUtils.throwSystemError("AUTHENTICATION_ERROR", { message: "JWT token has expired" });
@@ -55,7 +56,9 @@ export class AuthenticationMiddleware {
                         ErrUtils.throwSystemError("AUTHENTICATION_ERROR", { message: "JWT verification error" });
                     }
                 }
-                ContextManager.setAttribute(ReqContextManager.USER_META, decoded.data)
+                const userId = await new UserDal().getUserId(decoded.data)
+                ContextManager.setAttribute(ReqContextManager.X_USER, decoded.data)
+                ContextManager.setAttribute(ReqContextManager.USER_META, { user_id: userId, email: decoded.data })
                 next();
             });
         }

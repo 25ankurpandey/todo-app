@@ -6,3 +6,8 @@ export interface UserAttributes {
     password?: string;
     mobile?: string;
 }
+
+export interface UserMeta {
+    user_id: number;
+    email: string;
+}

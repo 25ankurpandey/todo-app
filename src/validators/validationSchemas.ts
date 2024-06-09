@@ -1,5 +1,5 @@
 import Joi = require("joi");
-import { hashPassword } from "../utils/util";
+import { Priority, Status } from "../interfaces/Task";
 
 export const CreateUserValidationSchema = Joi.object({
     first_name: Joi.string().required(),
@@ -22,7 +22,34 @@ export const UserLoginValidationSchema = Joi.object({
 }).options({ abortEarly: false });
 
 export const AuthenticationMiddlewareConfigValidationSchema = Joi.object({
-    url:Joi.string().required(),
-    excluded_paths:Joi.array().default([]).optional(),
-    resource_urls:Joi.object().required(),
+    url: Joi.string().required(),
+    excluded_paths: Joi.array().default([]).optional(),
+    resource_urls: Joi.object().required(),
 }).options({ abortEarly: false });
+
+export const CreateTaskValidationSchema = Joi.object({
+    title: Joi.string().trim().pattern(/\S/).required(),
+    description: Joi.string().allow(null, ''),
+    due_date: Joi.date().allow(null),
+    priority: Joi.string()
+        .valid(...Object.values(Priority))
+        .default(Priority.MEDIUM)
+        .insensitive(),
+    status: Joi.string()
+        .valid(...Object.values(Status))
+        .default(Status.PENDING)
+        .insensitive(),
+}).options({ abortEarly: false });
+
+export const UpdateTaskValidationSchema = Joi.object({
+    title: Joi.string().trim().pattern(/\S/),
+    description: Joi.string().allow(null, ''),
+    due_date: Joi.date().allow(null),
+    priority: Joi.string()
+        .valid(...Object.values(Priority))
+        .default(Priority.MEDIUM),
+    status: Joi.string()
+        .valid(...Object.values(Status))
+        .default(Status.PENDING),
+}).unknown(true)
+    .options({ abortEarly: false });

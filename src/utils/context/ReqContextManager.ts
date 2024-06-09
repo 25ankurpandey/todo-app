@@ -4,6 +4,7 @@ import { ContextManager } from "./ContextManager";
 import { v4 as uuidv4 } from "uuid";
 import * as requestIp from "request-ip";
 import { ValidationUtils } from "../ValidationUtils";
+import { UserMeta } from "../../interfaces/User";
 
 export class ReqContextManager {
 
@@ -37,7 +38,6 @@ export class ReqContextManager {
 
     public static populateFromHeaders(req: any, checkUrlsToBeExcluded: boolean): void {
         ReqContextManager.addTraceAttributes(req);
-        ReqContextManager.setAttribute(req, ReqContextManager.X_USER);
         ReqContextManager.setAttribute(req, ReqContextManager.CALLER, true); // Allow unknown caller
         ReqContextManager.setAttribute(req, ReqContextManager.TIMESTAMP);
         ReqContextManager.validateMandatoryHeaders(req, checkUrlsToBeExcluded);
@@ -134,7 +134,7 @@ export class ReqContextManager {
         return ReqContextManager.getAttribute(ReqContextManager.authorization);
     }
 
-    public static getUserMeta(): string {
+    public static getUserMeta(): UserMeta {
         return ReqContextManager.getAttribute(ReqContextManager.USER_META);
     }
 }

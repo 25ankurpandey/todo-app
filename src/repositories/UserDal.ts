@@ -18,12 +18,12 @@ export class UserDal {
             }
         });
 
-        const updatedCourier = await sequelizeConn["models"]["UserAttributes"].findOne({
+        const updatedUser = await sequelizeConn["models"]["UserAttributes"].findOne({
             where: {
                 "email": userEmail,
             }
         });
-        return updatedCourier;
+        return updatedUser;
     }
 
     async getUserByEmail(userEmail: string): Promise<Partial<UserOutput>> {
@@ -32,5 +32,15 @@ export class UserDal {
                 email: userEmail
             }
         });
+    }
+
+    async getUserId(userEmail: string): Promise<Partial<UserOutput>> {
+        const userId = await sequelizeConn["models"]["UserAttributes"].findOne({
+            attributes: ["id"],
+            where: {
+                email: userEmail
+            }
+        });
+        return userId.id;
     }
 }

@@ -24,29 +24,29 @@ export const UserClassFactory = function () {
 }
 
 export const UserModel = {
-  id: {
+  "id": {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   },
-  first_name: {
+  "first_name": {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  last_name: {
+  "last_name": {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  email: {
+  "email": {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
   },
-  password: {
+  "password": {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  mobile: {
+  "mobile": {
     type: DataTypes.STRING,
     allowNull: false,
   },

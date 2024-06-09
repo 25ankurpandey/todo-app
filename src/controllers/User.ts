@@ -38,8 +38,8 @@ export class UserController extends BaseController {
     public async updateUser(req: Request, res: Response): Promise<void> {
         try {
             const value = await UpdateUserValidationSchema.validateAsync(req.body);
-            const createUserRes = await this.userService.updateUser(value);
-            res.send(createUserRes);
+            const updateUserRes = await this.userService.updateUser(value);
+            res.send(updateUserRes);
         } catch (err) {
             if (err.name === "ValidationError") {
                 ErrUtils.throwValidationError("Validation error", err.details);

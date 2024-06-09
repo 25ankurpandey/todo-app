@@ -3,6 +3,7 @@ import { DbConfig } from "../interfaces/Configs";
 import { Logger } from "../utils/logging/Logger";
 import { UserClassFactory, UserModel } from "../models/UserAttributes";
 import { RequestAuditClassFactory, RequestAuditModel } from "../models/RequestAudit";
+import { TasksClassFactory, TasksModel } from "../models/Tasks";
 
 let sequelizeConn: { [propName: string]: any } = {};
 const dialect: Dialect = "mysql";
@@ -10,7 +11,8 @@ const dialect: Dialect = "mysql";
 async function createDBConn(dbConfig: DbConfig): Promise<void> {
 		const modelMap = {
 			UserAttributes: { class: UserClassFactory(), model: UserModel },
-			RequestAudit: { class: RequestAuditClassFactory(), model: RequestAuditModel }
+			RequestAudit: { class: RequestAuditClassFactory(), model: RequestAuditModel },
+			Tasks: { class: TasksClassFactory(), model: TasksModel }
 		};
 		const models = Object.keys(modelMap);
 		sequelizeConn = { "conn": null, "models": {} };
