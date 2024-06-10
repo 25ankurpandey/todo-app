@@ -1,0 +1,18 @@
+{{- define "todosvc.service" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "todo-svc.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "todo-svc.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.externalPort }}
+      targetPort: {{ .Values.service.internalPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "todo-svc.selectorLabels" . | nindent 4 }}
+{{- end }}

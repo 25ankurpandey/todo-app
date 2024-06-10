@@ -1,0 +1,110 @@
+environment: prod
+namespace: todosvc
+# deployments is an array. Hence supports multiple deployments.
+deployments:
+  - name: todosvc
+    podLabels:
+      app: todosvc
+    # containers is an array. Hence supports multiple containers.
+    containers:
+      - name: todosvc
+        containerPortName: todosvc-port
+        containerPort: 3000
+        internalServicePort: 3000
+        externalNodePort: 54321
+        servicePortName: todosvc-port
+        imageName: todosvc
+        imagePullPolicy: Always
+        imageTag: v0.0.1
+        configMapName: todosvc-configmap
+        secretName: todosvc-secrets
+        secretsFileName: todosvc-secrets-file
+        livenessProbe:
+          httpGet:
+            path: /todo-svc/v1/health
+            port: 3000
+          periodSeconds: 200
+          initialDelaySeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /todo-svc/v1/health
+            port: 3000
+          initialDelaySeconds: 200
+          periodSeconds: 30
+          successThreshold: 1
+          failureThreshold: 2
+        resources:
+          requests:
+            cpu: 250m
+            memory: 300Mi
+          limits:
+            cpu: 300m
+            memory: 500Mi
+    rollingUpdate:
+      maxSurge: "30%"
+      maxUnavailable: "20%"
+    affinity:
+      nodeAffinityLabels:
+        - name: environment
+          value: prod
+      podAntiAffinity:
+        type: required
+        labels:
+          - name: app
+            value: todosvc
+    hpa:
+      native:
+        minReplicas: 1
+        maxReplicas: 1
+        targetCPUAverage: 80
+        targetMemoryAverage: 90
+        targetNamespace: todosvc
+        targetDeployment: todosvc
+    #   requestBased:
+    #     minReplicas: 1
+    #     maxReplicas: 2
+    #     targetAverageValue: 500
+    #     targetNamespace: "todosvc"
+    #     targetDeployment: "todosvc"
+    #     metrics:
+    #       - name: "http_requests_todosvc"
+    #       #   targetGroup: ""
+    #       #   loadBalancer: "app/dev-internal-svc-alb/036f05889f309f91"
+    #       #   period: 60
+    # pdb:
+    #   minAvailable: 80%
+
+configMaps:
+  - name: todosvc-configmap
+    data:
+      "conf": |
+        "DEBUG": false
+        "ENVIRONMENT": "prod"
+      LOG_LEVEL: "info"
+      ENVIRONMENT: "prod"
+      NODE_ENV: "prod"
+      SLA_MS: 100
+      REQUEST_AUDIT_ENABLED: true
+      AEROSPIKE_MAX_CONN_PER_NODE: 10
+      AEROSPIKE_READ_POLICY_MAX_RETRIES: 2
+      AEROSPIKE_WRITE_POLICY_MAX_RETRIES: 0
+      AEROSPIKE_MAX_COMMANDS_IN_PROCESS: 10
+      AEROSPIKE_MAX_COMMANDS_IN_QUEUE: 10
+      TODO_SVC_CONFIG_HOST: https://config2.free.beeceptor.com
+      EXPOSE_PORT: true
+      TODO_SVC_PORT: 3010
+      JWT_SECRET: your_jwt_secret
+      SALT_ROUNDS: 10
+
+requiredInfraDependencies:
+  name: slot-infra
+  values:
+    MYSQL_PASSWORD: $MYSQL_PASSWORD
+    
+    # NOTE: nodeLabels renders the nodeSelector block.
+# nodeAffinityLabels, although can be used as an alternative to `nodeSelector`, is much more powerful than `nodeSelector`.
+
+nodeLabels:
+  environment: prod

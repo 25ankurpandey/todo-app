@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 
-service_name="tplserviceabilitysvc"
+service_name="todosvc"
 
 ENVIRONMENT=$1
 
@@ -15,14 +15,11 @@ else
 fi
 
 if [ ! -d "$HOME/tpl-serviceability-svc" ]; then
-    echo "No such directory: $HOME/tplserviceabilitysvc/"
+    echo "No such directory: $HOME/todosvc/"
     exit 1
 fi
 
-cd $HOME/tpl-serviceability-svc/charts/tplserviceabilitysvc
-
-echo -e "Running Heva..."
-printf "Heva version: $(heva -v)"
+cd $HOME/todo-app/charts/todosvc
 
 output_file_name="/tmp/$service_name-final-$ENVIRONMENT-values.yaml"
 

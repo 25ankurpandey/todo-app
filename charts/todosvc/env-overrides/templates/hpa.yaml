@@ -1,0 +1,29 @@
+{{- define "todosvc.hpa" -}}
+{{- if .Values.service.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "todo-svc.fullname" . }}
+  namespace: {{ .Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "todo-svc.fullname" . }}
+  minReplicas: {{ .Values.service.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.service.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.service.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.service.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.service.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.service.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
+{{- end }}

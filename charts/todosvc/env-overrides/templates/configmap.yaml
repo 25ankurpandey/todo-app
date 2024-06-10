@@ -1,0 +1,11 @@
+{{- define "todosvc.configmap" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "todo-svc.fullname" . }}
+  namespace: {{ .Values.namespace }}
+data:
+  {{- range $key, $value := .Values.service.config }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
