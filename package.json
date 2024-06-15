@@ -8,7 +8,7 @@
     "dev-start": "nodemon --exec ts-node -r dotenv/config ./src/index.ts",
     "dockerbuild": "rm -rf ./dist && mkdir -p ./dist & tsc --outDir ./dist",
     "lint": "eslint --ignore-path .gitignore .",
-    "test": "mocha -r ts-node/register test/services/TodoSvc.test.ts",
+    "test": "mocha -r ts-node/register test/services/UserService.test.ts && mocha -r ts-node/register test/services/TaskService.test.ts",
     "generate-docs": "swagger-jsdoc-generator swagger-config.ts > apidoc.json",
     "test:coverage": "nyc npm run test"
   },
