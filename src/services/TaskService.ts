@@ -5,10 +5,8 @@ import { TaskDal, UserDal } from "../repositories";
 import { provideSingleton } from "../ioc/ioc";
 import { ErrUtils } from "../utils/ErrUtils";
 import { TasksInput } from "../models/Tasks";
-import { hashPassword, validatePassword, generateToken } from "../utils/util";
-import { AuthenticationMiddleware } from "../utils/middleware/AuthenticationMiddleware";
 import { ReqContextManager } from "../utils/context/ReqContextManager";
-import { Priority, Status } from "../interfaces/Task";
+import { getPagination } from "../utils/util";
 
 @provideSingleton(TaskService)
 export class TaskService extends BaseService {
@@ -22,14 +20,20 @@ export class TaskService extends BaseService {
         super();
     }
 
-    async fetchTask(query: any): Promise<any> {
+    async fetchTask(filters: { [s: string]: any }): Promise<any> {
         try {
             Logger.info("Fetch task...");
-            const userId = ReqContextManager.getUserMeta().id;
-            const tasks = await this.taskDal.getAll(userId, query);
-            const statusFilters = Object.values(Status);
-            const priorityFilters = Object.values(Priority);
-            return { tasks: tasks, status_filter: statusFilters, priority_filter: priorityFilters };
+            const options: { [s: string]: any } = {};
+            let limit, offset;
+            if (filters.page_no || filters.page_size) {
+                ({ limit, offset } = getPagination(filters.page_no - 1, filters.page_size));
+            }
+            options.page = { limit, offset };
+            delete filters.page_no;
+            delete filters.page_size;
+            options.filters = filters;
+            const tasks = await this.taskDal.getTasks(options);
+            return tasks;
         }
         catch (err) {
             Logger.error(err, "", "FETCH_TASK_ERROR");

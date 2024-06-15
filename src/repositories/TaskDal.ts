@@ -5,6 +5,7 @@ import { TasksInput, TasksOutput } from "../models/Tasks";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { ReqContextManager } from "../utils/context/ReqContextManager";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -12,25 +13,41 @@ dayjs.tz.setDefault("Asia/Kolkata");
 @provideSingleton(TaskDal)
 export class TaskDal {
 
-    async getAll(user_id: number, query: any): Promise<any[]> {
+    async getTasks(options: { [s: string]: any }): Promise<any[]> {
         const whereStatement = {
-            user_id: user_id
+            user_id: ReqContextManager.getUserMeta().id
         };
-        
-        if (query.date) {
-            const startDate = dayjs.tz(query.date, "Asia/Kolkata").startOf("day").toDate(); 
-            const endDate = dayjs.tz(query.date, "Asia/Kolkata").endOf("day").toDate(); 
-            query.created_at = {
+        let orderStatement = [["created_at", options.filters.sort]];
+        if (options.filters.sort_by) {
+            orderStatement = [[options.filters.sort_by, options.filters.sort]];
+        }
+        delete options.filters.sort;
+        delete options.filters.sort_by;
+
+        const page = options.page;
+        const filters = options.filters;
+
+        if (filters.date) {
+            const startDate = dayjs.tz(filters.date, "Asia/Kolkata").startOf("day").toDate(); 
+            const endDate = dayjs.tz(filters.date, "Asia/Kolkata").endOf("day").toDate(); 
+            filters.created_at = {
                 [Op.between]: [startDate, endDate]
             };
-            delete query["date"];
+            delete filters["date"];
         }
-        Object.assign(whereStatement, query);
-
-        return sequelizeConn["models"]["Tasks"].findAll({
+        Object.assign(whereStatement, filters);
+        const query = {
             where: whereStatement,
+            order: orderStatement,
+            nest: true,
             raw: true
-        });
+        }
+
+        if (page.limit !== null && page.offset !== null) {
+            query["limit"] = page.limit;
+            query["offset"] = page.offset;
+        }
+        return sequelizeConn["models"]["Tasks"].findAndCountAll(query);
     }
 
     async create(payload: TasksInput): Promise<TasksOutput> {

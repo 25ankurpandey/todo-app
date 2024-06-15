@@ -7,6 +7,8 @@ import { BaseController } from "./Base";
 import { ErrUtils } from "../utils/ErrUtils";
 import { TaskService } from "../services/TaskService";
 import { CreateTaskValidationSchema, UpdateTaskValidationSchema, FiltersValidationSchema } from "../validators/validationSchemas";
+import { getFormattedPagingData } from "../utils/util";
+import { Priority, Status } from "../interfaces/Task";
 
 @controller(`${Constants.Context_Path}/task`)
 
@@ -21,8 +23,31 @@ export class TaskController extends BaseController {
     public async getTask(req: Request, res: Response): Promise<void> {
         try {
             const query = await FiltersValidationSchema.validateAsync(req.query);
+            const page_no = query.page_no ? query.page_no : null;
+            const page_size = query.page_size ? query.page_size : null;
             const tasks = await this.taskService.fetchTask(query);
-            res.send(tasks);
+            const statusFilters = Object.values(Status);
+            const priorityFilters = Object.values(Priority);
+            if (page_no || page_size) {
+                const response = getFormattedPagingData(tasks, page_size, page_no);
+                Object.assign(response, {status_filter: statusFilters, priority_filter: priorityFilters});
+                res.send(response);
+            }
+            else {
+                const { count: totalCount, rows: data } = tasks;
+                const currentPage = page_no;
+                const finalPageSize = page_size;
+                res.send({
+                    data: data,
+                    meta: {
+                        total_count: totalCount,
+                        page_size: finalPageSize,
+                        page_no: currentPage,
+                    },
+                    status_filter: statusFilters, 
+                    priority_filter: priorityFilters
+                });
+            }
         } catch (err) {
             if (err.name === "ValidationError") {
                 ErrUtils.throwValidationError("Validation error", err.details);
@@ -74,7 +99,7 @@ export class TaskController extends BaseController {
     public async deleteUser(req: Request, res: Response): Promise<void> {
         try {
             const task_id = parseInt(req.params.id);
-            const response= await this.taskService.deleteTask(task_id);
+            const response = await this.taskService.deleteTask(task_id);
             res.send(response);
         } catch (err) {
             if (err.name === "ValidationError") {

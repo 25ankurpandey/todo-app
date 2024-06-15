@@ -35,7 +35,6 @@ export class ResourceActionMappingDal {
             return result;
           }, {});
 
-        console.log("88888888888888888888888888888888", JSON.stringify(actionRes))
         return actionRes; 
     }
 }

@@ -56,11 +56,16 @@ export const UpdateTaskValidationSchema = Joi.object({
     .options({ abortEarly: false });
 
 export const FiltersValidationSchema = Joi.object({
+    page_no: Joi.number().integer().min(1).optional(),
+    page_size: Joi.number().integer().min(1).optional(),
     created_at: Joi.date(),
     status: Joi.string()
         .valid(...Object.values(Status)),
     priority: Joi.string()
-        .valid(...Object.values(Priority))
+        .valid(...Object.values(Priority)),
+    sort: Joi.string().valid("ASC", "DESC").default("ASC").insensitive(),
+    sort_by: Joi.string().valid("created_at",
+        "priority").optional()
 }).unknown(true)
     .options({ abortEarly: false });
 

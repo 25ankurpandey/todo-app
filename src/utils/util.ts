@@ -40,3 +40,26 @@ export async function validatePassword(userEnteredPassword: string, hashedPasswo
         throw new Error("wrong password");
     }
 }
+
+export const getPagination = (page, size) => {
+    const limit = size ? +size : 5;
+    const offset = page ? page * limit : 0;
+  
+    return { limit, offset };
+  };
+  
+  export const getFormattedPagingData = (result, pageSize, page) => {
+    const { count: totalCount, rows: data } = result;
+    const currentPage = page ? +page : 1;
+    const finalPageSize = pageSize || 5;
+  
+  
+    return {
+      data: data,
+      meta: {
+        total_count: totalCount,
+        page_size: finalPageSize,
+        page_no: currentPage,
+      }
+    };
+  };
