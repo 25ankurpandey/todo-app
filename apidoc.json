@@ -1,19 +1,1047 @@
 {
+  "swagger": "2.0",
   "info": {
-    "title": "todo-svc",
-    "version": "1.0.0"
-  },
-  "securityDefinitions": {
-    "bearerAuth": {
-      "type": "apiKey",
-      "name": "Authorization",
-      "in": "header"
+    "version": "1.0",
+    "title": "TODO App",
+    "description": "Welcome to the Todo List Application! This project is a fully functional, scalable, and production-ready to-do list application. It provides a RESTful API to handle CRUD (Create, Read, Update, Delete) operations for tasks, implements robust server-side validation, has user authentication and authorization and includes comprehensive deployment scripts and documentation.",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "name": "Ankur",
+      "email": "25ankurpandey@gmail.com"
     }
   },
-  "swagger": "2.0",
-  "paths": {},
-  "definitions": {},
-  "responses": {},
-  "parameters": {},
-  "tags": []
+  "host": "http://localhost:3000",
+  "paths": {
+    "/todo-svc/v1/user/login": {
+      "post": {
+        "description": "To control user authentication. Provides signup, login, logout functionalities",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "User Management"
+        ],
+        "summary": "Authenticate user and generate JWT token",
+        "parameters": [
+          {
+            "name": "X-Tracker",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "X-Timestamp",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Authenticate user and generate JWT token",
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/LoginRequestBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "schema": {
+              "$ref": "#/components/schemas/LoginResponseBody"
+            }
+          },
+          "400": {
+            "description": "Request Validation",
+            "schema": {
+              "$ref": "#/components/schemas/LoginErrorResponse_1"
+            }
+          },
+          "500": {
+            "description": "System Errors",
+            "schema": {
+              "$ref": "#/components/schemas/LoginErrorResponse_error"
+            }
+          }
+        }
+      }
+    },
+    "/todo-svc/v1/user/create": {
+      "put": {
+        "description": "Create user and generate JWT token",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "User Management"
+        ],
+        "summary": "Create user and generate JWT token",
+        "parameters": [
+          {
+            "name": "X-Tracker",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "X-Timestamp",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Create user",
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CreateUserRequestBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "schema": {
+              "$ref": "#/components/schemas/LoginResponseBody"
+            }
+          },
+          "400": {
+            "description": "Request Validation",
+            "schema": {
+              "$ref": "#/components/schemas/LoginErrorResponse_1"
+            }
+          },
+          "500": {
+            "description": "System error",
+            "schema": {
+              "$ref": "#/components/schemas/SystemErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/todo-svc/v1/user/update": {
+      "patch": {
+        "description": "Update existing user",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "User Management"
+        ],
+        "summary": "Update existing user",
+        "parameters": [
+          {
+            "name": "X-Tracker",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "X-Timestamp",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Update existing user",
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/UpdateUserRequestBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "schema": {
+              "$ref": "#/components/schemas/UpdateUserResponseBody"
+            }
+          },
+          "400": {
+            "description": "Request Validation",
+            "schema": {
+              "$ref": "#/components/schemas/UpdateUserValidationError"
+            }
+          },
+          "500": {
+            "description": "System error",
+            "schema": {
+              "$ref": "#/components/schemas/SystemErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/todo-svc/v1/user/logout": {
+      "patch": {
+        "description": "Logout user",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "User Management"
+        ],
+        "summary": "Logout user",
+        "parameters": [
+          {
+            "name": "X-Tracker",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "X-Timestamp",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "schema": {
+              "$ref": "#/components/schemas/SuccessResponse"
+            }
+          },
+          "500": {
+            "description": "System error",
+            "schema": {
+              "$ref": "#/components/schemas/SystemErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/todo-svc/v1/user/task": {
+      "get": {
+        "description": "This API is used to view tasks for a user. Filters for a type can be passed in query params to get filtered response. It also supports searching, sorting and pagination",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "TODO APIs"
+        ],
+        "summary": "This API is used to view tasks for a user. Filters for a type can be passed in query params to get filtered response. It also supports searching, sorting and pagination",
+        "parameters": [
+          {
+            "name": "X-Tracker",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "X-Timestamp",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "page_no",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "schema": {
+              "$ref": "#/components/schemas/ViewTaskResponse"
+            }
+          },
+          "400": {
+            "description": "Request Validation",
+            "schema": {
+              "$ref": "#/components/schemas/ViewTaskValidationError"
+            }
+          },
+          "500": {
+            "description": "System Errors",
+            "schema": {
+              "$ref": "#/components/schemas/MasterConfigSystemErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/todo-svc/v1/user/task/create": {
+      "put": {
+        "description": "Create a task",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "TODO APIs"
+        ],
+        "summary": "Create a task",
+        "parameters": [
+          {
+            "name": "X-Tracker",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "X-Timestamp",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "Create a task",
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CreateTaskRequestBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "schema": {
+              "$ref": "#/components/schemas/CreateTaskResponse"
+            }
+          },
+          "400": {
+            "description": "Request Validation",
+            "schema": {
+              "$ref": "#/components/schemas/CreateTaskValidationError"
+            }
+          },
+          "500": {
+            "description": "System error",
+            "schema": {
+              "$ref": "#/components/schemas/SystemErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/todo-svc/v1/user/task/update/{task_id}": {
+      "patch": {
+        "description": "Update task",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "TODO APIs"
+        ],
+        "summary": "Update task",
+        "parameters": [
+          {
+            "name": "X-Tracker",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "X-Timestamp",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "description": "Update task",
+            "name": "payload",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/CreateTaskRequestBody"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "schema": {
+              "$ref": "#/components/schemas/CreateTaskResponse"
+            }
+          },
+          "400": {
+            "description": "Request Validation",
+            "schema": {
+              "$ref": "#/components/schemas/CreateTaskValidationError"
+            }
+          },
+          "500": {
+            "description": "System error",
+            "schema": {
+              "$ref": "#/components/schemas/SystemErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/todo-svc/v1/user/task/delete/{task_id}": {
+      "delete": {
+        "description": "Delete task",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "TODO APIs"
+        ],
+        "summary": "Delete task",
+        "parameters": [
+          {
+            "name": "X-Tracker",
+            "in": "header",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "X-Timestamp",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "schema": {
+              "$ref": "#/components/schemas/SuccessResponse"
+            }
+          },
+          "500": {
+            "description": "System error",
+            "schema": {
+              "$ref": "#/components/schemas/SystemErrorResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LoginRequestBody": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "required": true,
+            "example": "test@test.com"
+          },
+          "password": {
+            "type": "string",
+            "required": true,
+            "example": "password"
+          }
+        }
+      },
+      "LoginResponseBody": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "example": 101
+              },
+              "first_name": {
+                "type": "string",
+                "example": "test"
+              },
+              "last_name": {
+                "type": "string",
+                "example": "test"
+              },
+              "email": {
+                "type": "string",
+                "example": "test@test.com"
+              },
+              "mobile": {
+                "type": "string",
+                "example": 9876543210
+              },
+              "is_superuser": {
+                "type": "boolean",
+                "example": 0
+              },
+              "created_at": {
+                "type": "string",
+                "example": "2024-06-15 16:27:05"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "2024-06-15 16:27:05"
+              }
+            }
+          },
+          "jwt_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiMjVhbmt1cnBhbmRleUBnbWFpbC5jb20iLCJpYXQiOjE3MTg0NzQ1NjUsImV4cCI6MTcxODQ3ODE2NX0.INQwHTzDbYS7XbbfcWWSYSLBRqKeXvKRthO25Dgazd0"
+          }
+        }
+      },
+      "UpdateUserResponseBody": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "example": 101
+              },
+              "first_name": {
+                "type": "string",
+                "example": "test"
+              },
+              "last_name": {
+                "type": "string",
+                "example": "test"
+              },
+              "email": {
+                "type": "string",
+                "example": "test@test.com"
+              },
+              "mobile": {
+                "type": "string",
+                "example": 9876543210
+              },
+              "is_superuser": {
+                "type": "boolean",
+                "example": 0
+              },
+              "created_at": {
+                "type": "string",
+                "example": "2024-06-15 16:27:05"
+              },
+              "updated_at": {
+                "type": "string",
+                "example": "2024-06-15 16:27:05"
+              }
+            }
+          }
+        }
+      },
+      "LoginErrorResponse_error": {
+        "properties": {
+          "code": {
+            "type": "number",
+            "example": 1
+          },
+          "details": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "example": "Incorrect username or password"
+              }
+            }
+          },
+          "type": {
+            "type": "string",
+            "example": "SYSTEM_ERR"
+          },
+          "trace_id": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "LoginErrorResponse_1": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "ValidationError": {
+        "properties": {
+          "code": {
+            "type": "number",
+            "example": 2
+          },
+          "details": {
+            "type": "array",
+            "example": [
+              {
+                "message": "email is required"
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "example": "VALIDATION_ERR"
+          },
+          "trace_id": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "CreateUserRequestBody": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "example": "test"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "test"
+          },
+          "email": {
+            "type": "string",
+            "example": "test@test.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          },
+          "mobile": {
+            "type": "string",
+            "example": 9876543210
+          }
+        }
+      },
+      "UpdateUserRequestBody": {
+        "type": "object",
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "example": "test"
+          },
+          "last_name": {
+            "type": "string",
+            "example": "test"
+          },
+          "password": {
+            "type": "string",
+            "example": "password"
+          },
+          "mobile": {
+            "type": "string",
+            "example": 9876543210
+          }
+        }
+      },
+      "SuccessResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "UpdateUserValidationError": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": 2
+          },
+          "detail": {
+            "type": "array",
+            "example": [
+              {
+                "message": "password should be a string",
+                "path": "store_queue_id"
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "example": "VALIDATION_ERR"
+          },
+          "display_message": {
+            "type": "string",
+            "example": "Sorry! Something went wrong!"
+          },
+          "trace_id": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "System_error": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 3
+          },
+          "detail": {
+            "type": "array",
+            "example": [
+              {
+                "message": "Something went wrong"
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "example": "SYSTEM_ERROR"
+          },
+          "display_message": {
+            "type": "string",
+            "example": "Sorry! Something went wrong!"
+          },
+          "trace_id": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "SystemErrorResponse": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/System_error"
+            }
+          }
+        }
+      },
+      "CreateTaskRequestBody": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "test"
+          },
+          "description": {
+            "type": "string",
+            "example": "test"
+          },
+          "due_date": {
+            "type": "string",
+            "example": "2024-06-15T00:00:00.000Z"
+          },
+          "priority": {
+            "type": "string",
+            "example": "high"
+          },
+          "status": {
+            "type": "string",
+            "example": "pending"
+          }
+        }
+      },
+      "CreateTaskResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "user_id": {
+            "type": "number",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "test"
+          },
+          "description": {
+            "type": "string",
+            "example": "test"
+          },
+          "due_date": {
+            "type": "string",
+            "example": "2024-06-15T00:00:00.000Z"
+          },
+          "priority": {
+            "type": "string",
+            "example": "high"
+          },
+          "status": {
+            "type": "string",
+            "example": "pending"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2024-06-15 16:27:05"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2024-06-15 16:27:05"
+          }
+        }
+      },
+      "CreateTaskValidationError": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": 2
+          },
+          "detail": {
+            "type": "array",
+            "example": [
+              {
+                "message": "\"priority\" must one of [\"low\", \"high\", \"medium\"]",
+                "path": [
+                  "type"
+                ]
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "example": "VALIDATION_ERR"
+          },
+          "display_message": {
+            "type": "string",
+            "example": "Sorry! Something went wrong!"
+          },
+          "trace_id": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "ViewTaskResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "example": {
+                "id": 1,
+                "title": "Second Task",
+                "description": "",
+                "due_date": "2024-06-10 05:30:00",
+                "priority": "low",
+                "status": "pending",
+                "user_id": 1,
+                "created_at": "2024-06-15 21:00:40",
+                "updated_at": "2024-06-15 21:00:40"
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "total_count": {
+                "type": "integer",
+                "example": 10
+              },
+              "page_size": {
+                "type": "integer",
+                "example": 1
+              },
+              "page_no": {
+                "type": "integer",
+                "example": 1
+              }
+            }
+          }
+        }
+      },
+      "ViewTaskValidationError": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": 2
+          },
+          "detail": {
+            "type": "array",
+            "example": [
+              {
+                "message": "\"priority\" must one of [\"low\", \"high\", \"medium\"]",
+                "path": [
+                  "type"
+                ]
+              }
+            ]
+          },
+          "type": {
+            "type": "string",
+            "example": "VALIDATION_ERR"
+          },
+          "display_message": {
+            "type": "string",
+            "example": "Sorry! Something went wrong!"
+          },
+          "trace_id": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "MasterConfigNotFoundErrorResponse": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "properties": {
+                "code": {
+                  "type": "number",
+                  "example": 3003
+                },
+                "code_str": {
+                  "type": "string",
+                  "example": "TPL3003"
+                },
+                "details": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "example": "courier_id not found"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "example": "NOT_FOUND_ERR"
+                },
+                "display_message": {
+                  "type": "string",
+                  "example": "Sorry! Something went wrong!"
+                },
+                "trace_id": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            }
+          }
+        }
+      },
+      "MasterConfigSystemErrorResponse": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "properties": {
+                "code": {
+                  "type": "number",
+                  "example": 3003
+                },
+                "code_str": {
+                  "type": "string",
+                  "example": "TPL3003"
+                },
+                "details": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "example": "Something went wrong"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "example": "SYSTEM_ERR"
+                },
+                "display_message": {
+                  "type": "string",
+                  "example": "Sorry! Something went wrong!"
+                },
+                "trace_id": {
+                  "type": "string",
+                  "example": ""
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

@@ -62,7 +62,6 @@ export class UserService extends BaseService {
             if (!finduser) {
                 throw new Error("user not found");
             }
-
             await validatePassword(reqBody.password, finduser.password);
             const jwtToken = await generateToken(finduser.email);
             return { user: finduser, jwtToken: jwtToken };

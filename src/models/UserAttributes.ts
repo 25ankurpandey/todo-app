@@ -22,6 +22,12 @@ export const UserClassFactory = function () {
         public password!: string;
         public mobile!: string;
         public is_superuser!: number;
+
+        toJSON() {
+          const values = Object.assign({}, this.get());
+          delete values.password;
+          return values;
+      }
       }
 }
 
@@ -54,6 +60,7 @@ export const UserModel = {
   },
   "is_superuser": {
     type: DataTypes.TINYINT,
-    allowNull: false
+    allowNull: false,
+    default: false
   }
 };
