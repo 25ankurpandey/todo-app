@@ -1,6 +1,6 @@
 {
   "info": {
-    "title": "tpl-serviceability-svc",
+    "title": "todo-svc",
     "version": "1.0.0"
   },
   "securityDefinitions": {
