@@ -7,6 +7,7 @@ interface UserAttributes {
   email: string;
   password: string;
   mobile: string;
+  is_superuser: number;
 }
 
 export type UserInput = Optional<UserAttributes, null>
@@ -20,6 +21,7 @@ export const UserClassFactory = function () {
         public email!: string;
         public password!: string;
         public mobile!: string;
+        public is_superuser!: number;
       }
 }
 
@@ -50,4 +52,8 @@ export const UserModel = {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  "is_superuser": {
+    type: DataTypes.TINYINT,
+    allowNull: false
+  }
 };

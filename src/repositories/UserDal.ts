@@ -34,6 +34,10 @@ export class UserDal {
         });
     }
 
+    async getUser(query = {}): Promise<Partial<UserOutput>> {
+        return await sequelizeConn["models"]["UserAttributes"].findOne(query);
+    }
+
     async getUserId(userEmail: string): Promise<Partial<UserOutput>> {
         const userId = await sequelizeConn["models"]["UserAttributes"].findOne({
             attributes: ["id"],

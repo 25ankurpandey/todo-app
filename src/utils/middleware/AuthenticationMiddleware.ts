@@ -49,16 +49,16 @@ export class AuthenticationMiddleware {
             // Verify JWT token
             jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
                 if (err) {
-                    if (err.name === 'TokenExpiredError') {
+                    if (err.name === "TokenExpiredError") {
                         ErrUtils.throwSystemError("AUTHENTICATION_ERROR", { message: "JWT token has expired" });
                     } else {
                         Logger.error(err, "", "JWT verification error");
                         ErrUtils.throwSystemError("AUTHENTICATION_ERROR", { message: "JWT verification error" });
                     }
                 }
-                const userId = await new UserDal().getUserId(decoded.data)
-                ContextManager.setAttribute(ReqContextManager.X_USER, decoded.data)
-                ContextManager.setAttribute(ReqContextManager.USER_META, { user_id: userId, email: decoded.data })
+                const userId = await new UserDal().getUserId(decoded.data);
+                ContextManager.setAttribute(ReqContextManager.X_USER, decoded.data);
+                ContextManager.setAttribute(ReqContextManager.USER_META, { id: userId, email: decoded.data });
                 next();
             });
         }

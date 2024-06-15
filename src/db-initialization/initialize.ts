@@ -4,6 +4,10 @@ import { Logger } from "../utils/logging/Logger";
 import { UserClassFactory, UserModel } from "../models/UserAttributes";
 import { RequestAuditClassFactory, RequestAuditModel } from "../models/RequestAudit";
 import { TasksClassFactory, TasksModel } from "../models/Tasks";
+import { ResourceClassFactory, ResourceModel } from "../models/Resource";
+import { ActionClassFactory, ActionModel } from "../models/Action";
+import { UserResourceMappingClassFactory, UserResourceMappingModel } from "../models/UserResourceMapping";
+import { ResourceActionMappingClassFactory, ResourceActionMappingModel } from "../models/ResourceActionMapping";
 
 let sequelizeConn: { [propName: string]: any } = {};
 const dialect: Dialect = "mysql";
@@ -12,7 +16,11 @@ async function createDBConn(dbConfig: DbConfig): Promise<void> {
 		const modelMap = {
 			UserAttributes: { class: UserClassFactory(), model: UserModel },
 			RequestAudit: { class: RequestAuditClassFactory(), model: RequestAuditModel },
-			Tasks: { class: TasksClassFactory(), model: TasksModel }
+			Tasks: { class: TasksClassFactory(), model: TasksModel },
+			Action: { class: ActionClassFactory(), model: ActionModel },
+			Resource: { class: ResourceClassFactory(), model: ResourceModel },
+			UserResourceMapping: { class: UserResourceMappingClassFactory(), model: UserResourceMappingModel },
+			ResourceActionMapping: { class: ResourceActionMappingClassFactory(), model: ResourceActionMappingModel }
 		};
 		const models = Object.keys(modelMap);
 		sequelizeConn = { "conn": null, "models": {} };

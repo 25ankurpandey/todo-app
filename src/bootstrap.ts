@@ -23,6 +23,8 @@ import "./ioc/loader";
 import { createDBConn, sequelizeConn } from "./db-initialization/initialize";
 import { RequestAuditInput } from "./models/RequestAudit";
 import { AerospikeAdapter } from "./utils/caching/AerospikeAdapter";
+import { AuthorizationMiddleware } from "./utils/middleware/AuthorizationMiddleware";
+import { AuthorizationConstants } from "./constants/AuthorizationConstants";
 
 async function init() {
     const exposePort: boolean = process.env.EXPOSE_PORT === "false" ? false : true;
@@ -62,15 +64,20 @@ function initializeServer(mode: boolean) {
         );
         ContextManager.init(app);
         HttpClient.init("todo-svc");
-        ReqContextManager.registerWithReqContextManager(app, 
+        ReqContextManager.registerWithReqContextManager(app,
             [
-                `${Constants.Context_Path}/user`,
-                `${Constants.Context_Path}/task`
+                `${Constants.Context_Path}`
             ],
             [
+                `${Constants.Context_Path}/user/create`,
                 `${Constants.Context_Path}/user/login`
-            ]);
+            ], 
+            [
+                `${Constants.Context_Path}/task`,
+            ], []);
+        AuthorizationMiddleware.init(AuthorizationConstants.AuthzConfig);
         app.use(AuthenticationMiddleware.checkAuthentication);
+        app.use(AuthorizationMiddleware.checkAuthorization);
         app.use(bodyParser.json({ limit: "15mb" }));
         app.use(ReqResMiddleware.reqResLog);
         app.use(

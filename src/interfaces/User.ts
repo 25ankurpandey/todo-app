@@ -8,6 +8,6 @@ export interface UserAttributes {
 }
 
 export interface UserMeta {
-    user_id: number;
+    id: number;
     email: string;
 }

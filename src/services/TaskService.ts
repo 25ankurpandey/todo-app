@@ -25,7 +25,7 @@ export class TaskService extends BaseService {
     async fetchTask(query: any): Promise<any> {
         try {
             Logger.info("Fetch task...");
-            const userId = ReqContextManager.getUserMeta().user_id;
+            const userId = ReqContextManager.getUserMeta().id;
             const tasks = await this.taskDal.getAll(userId, query);
             const statusFilters = Object.values(Status);
             const priorityFilters = Object.values(Priority);
@@ -40,7 +40,7 @@ export class TaskService extends BaseService {
     async createTask(reqBody: TasksInput): Promise<any> {
         try {
             Logger.info("Task creation...");
-            const userId = ReqContextManager.getUserMeta().user_id;
+            const userId = ReqContextManager.getUserMeta().id;
             reqBody["user_id"] = userId;
             return await this.taskDal.create(reqBody);
         }
@@ -53,7 +53,7 @@ export class TaskService extends BaseService {
     async updateTask(reqBody: TasksInput): Promise<any> {
         try {
             Logger.info("Task update...");
-            const userId = ReqContextManager.getUserMeta().user_id;
+            const userId = ReqContextManager.getUserMeta().id;
             reqBody["user_id"] = userId;
             if (await this.taskDal.checkIfTaskExists(reqBody.id)) {
                 return await this.taskDal.update(reqBody);

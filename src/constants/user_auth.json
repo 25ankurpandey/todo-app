@@ -1,0 +1,19 @@
+{
+    "privileges": {
+        "todo": {
+            "actions": [
+                "Read",
+                "Create",
+                "Update"
+            ]
+        },
+        "reminder": {
+            "actions": [
+                "Read",
+                "Create",
+                "Update"
+            ]
+        }
+    },
+    "meta": {}
+}

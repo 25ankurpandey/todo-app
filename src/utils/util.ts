@@ -1,6 +1,6 @@
 import to from "await-to-js";
 const jwt = require("jsonwebtoken");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 import { Logger } from "./logging/Logger";
 import { ValidationUtils } from "./ValidationUtils";
 import { Constants } from "../constants/Constants";
@@ -13,7 +13,7 @@ export const tryCatchWrapper = async function (task): Promise<any[]> {
 };
 
 export function generateToken(data: any): string {
-    const dataToSign = typeof data === 'string' ? { data } : data;
+    const dataToSign = typeof data === "string" ? { data } : data;
     const token = jwt.sign(dataToSign, process.env.JWT_SECRET, { expiresIn: Constants.jwtExpiration });
     AuthenticationMiddleware.addToWhitelist(token);
     return token;

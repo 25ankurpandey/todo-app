@@ -6,7 +6,8 @@ export const CreateUserValidationSchema = Joi.object({
     last_name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
-    mobile: Joi.string().required()
+    mobile: Joi.string().required(),
+    is_superuser: Joi.boolean().default(false)
 }).options({ abortEarly: false });
 
 export const UpdateUserValidationSchema = Joi.object({
@@ -29,7 +30,7 @@ export const AuthenticationMiddlewareConfigValidationSchema = Joi.object({
 
 export const CreateTaskValidationSchema = Joi.object({
     title: Joi.string().trim().pattern(/\S/).required(),
-    description: Joi.string().allow(null, ''),
+    description: Joi.string().allow(null, ""),
     due_date: Joi.date().allow(null),
     priority: Joi.string()
         .valid(...Object.values(Priority))
@@ -43,7 +44,7 @@ export const CreateTaskValidationSchema = Joi.object({
 
 export const UpdateTaskValidationSchema = Joi.object({
     title: Joi.string().trim().pattern(/\S/),
-    description: Joi.string().allow(null, ''),
+    description: Joi.string().allow(null, ""),
     due_date: Joi.date().allow(null),
     priority: Joi.string()
         .valid(...Object.values(Priority))
@@ -62,3 +63,9 @@ export const FiltersValidationSchema = Joi.object({
         .valid(...Object.values(Priority))
 }).unknown(true)
     .options({ abortEarly: false });
+
+export const AuthorizationMiddlewareConfigValidationSchema = Joi.object({
+    excluded_paths: Joi.array().default([]).optional(),
+    resource_urls: Joi.object().required(),
+    accepted_actions: Joi.array().required()
+}).options({ abortEarly: false });
