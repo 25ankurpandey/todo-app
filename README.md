@@ -32,7 +32,7 @@ Welcome to the Todo List Application! This project is a fully functional, scalab
 
 1. **Clone the Repository:** `git clone https://github.com/25ankurpandey/todo-app.git`
 2. **Install Dependencies:** `npm install`
-3. **Set Up config:** Setub config for service bootstrap, using a mock server(can be setup in multiple ways but will require slight code change to start working). Refer to Constants/service_config.json for sample config. Refet to Constants/user_auth.json for authorization config which is required for user authorization.
+3. **Set Up config:** Setup config for service bootstrap, using a mock server(can be setup in multiple ways but will require slight code change to start working). Refer to Constants/service_config.json for sample config. Refet to Constants/user_auth.json for authorization config which is required for user authorization.
 3. **Set Up Database:** Configure your database credentials in a different server or in a configuration file.
 4. **Run the App:**  `npm start`
 5. **Set Up Environment Variables:**  Create a .env file and add the necessary environment variables as per the .env.example.
