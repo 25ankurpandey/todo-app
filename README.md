@@ -41,7 +41,3 @@ Welcome to the Todo List Application! This project is a fully functional, highly
 ## API Endpoints
 You can interact with the API using tools like Postman or cURL. The base URL for the API is http://localhost:3000/todo-svc/v1
 For detailed API documentation, refer to the API Documentation in the repo's apidoc.json(https://github.com/25ankurpandey/todo-app/blob/main/apidoc.json). Use http://editor.swagger.io to render the apidoc.json
-
-## License 📄
-
-This project is licensed under the [MIT License](LICENSE).
