@@ -9,6 +9,7 @@ interface TasksAttributes {
     priority: Priority;
     status: Status;
     user_id: number;
+    reminder_sent: number;
 }
 
 export type TasksInput = Optional<TasksAttributes, null>
@@ -23,6 +24,7 @@ export const TasksClassFactory = function () {
         public priority!: Priority;
         public status!: Status;
         public user_id!: number;
+        public reminder_sent!: number;
         static associate(modelMap) {
             this.belongsTo(modelMap["UserAttributes"]["class"],
                 { foreignKey: "user_id", as: "user" });
@@ -56,5 +58,9 @@ export const TasksModel = {
     },
     "user_id": {
         type: DataTypes.INTEGER
+    },
+    "reminder_sent": {
+        type: DataTypes.TINYINT,
+        defaultValue: 0
     }
 };

@@ -1,4 +1,5 @@
 import { DataTypes, Model, Optional } from "sequelize";
+import { ReminderMethod } from "../interfaces/Task";
 
 interface UserAttributes {
   id: number;
@@ -8,6 +9,9 @@ interface UserAttributes {
   password: string;
   mobile: string;
   is_superuser: number;
+  reminder_enabled: number;
+  reminder_time: number;
+  reminder_method: ReminderMethod;
 }
 
 export type UserInput = Optional<UserAttributes, null>
@@ -22,6 +26,9 @@ export const UserClassFactory = function () {
         public password!: string;
         public mobile!: string;
         public is_superuser!: number;
+        public reminder_enabled!: number;
+        public reminder_time!: number;
+        public reminder_method!: ReminderMethod;
 
         toJSON() {
           const values = Object.assign({}, this.get());
@@ -60,7 +67,17 @@ export const UserModel = {
   },
   "is_superuser": {
     type: DataTypes.TINYINT,
-    allowNull: false,
-    default: false
+    defaultValue: 0
+  },
+  "reminder_enabled": {
+    type: DataTypes.TINYINT,
+    defaultValue: 0
+  },
+  "reminder_time": {
+    type: DataTypes.INTEGER,
+    defaultValue: 5
+  },
+  "reminder_method": {
+    type: DataTypes.ENUM(ReminderMethod.PUSH, ReminderMethod.EMAIL)
   }
 };

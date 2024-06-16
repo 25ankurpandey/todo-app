@@ -9,7 +9,7 @@ import { ReqContextManager } from "../utils/context/ReqContextManager";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
-dayjs.tz.setDefault("Asia/Kolkata"); 
+dayjs.tz.setDefault("Asia/Kolkata");
 @provideSingleton(TaskDal)
 export class TaskDal {
 
@@ -28,8 +28,8 @@ export class TaskDal {
         const filters = options.filters;
 
         if (filters.date) {
-            const startDate = dayjs.tz(filters.date, "Asia/Kolkata").startOf("day").toDate(); 
-            const endDate = dayjs.tz(filters.date, "Asia/Kolkata").endOf("day").toDate(); 
+            const startDate = dayjs.tz(filters.date, "Asia/Kolkata").startOf("day").toDate();
+            const endDate = dayjs.tz(filters.date, "Asia/Kolkata").endOf("day").toDate();
             filters.created_at = {
                 [Op.between]: [startDate, endDate]
             };
@@ -50,24 +50,37 @@ export class TaskDal {
         return sequelizeConn["models"]["Tasks"].findAndCountAll(query);
     }
 
+    async getTasksforReminders(): Promise<any> {
+        const now = dayjs.tz(new Date(), "Asia/Kolkata");
+        const fiveMinutesLater = now.add(5, "minute");
+
+        const taskList = await sequelizeConn["models"]["Tasks"].findAll({
+            where: {
+                due_date: {
+                    [Op.not]: null,
+                    [Op.gte]: now.toDate(),
+                    [Op.lte]: fiveMinutesLater.toDate(),
+                },
+                reminder_sent: false
+            },
+            include: [{
+                model: sequelizeConn["models"]["UserAttributes"],
+                as: "user",
+                attributes: {
+                    exclude: ["password", "created_at", "updated_at"]
+                },
+                where: { reminder_enabled: true }
+            }],
+        });
+        return taskList;
+    }
+
     async create(payload: TasksInput): Promise<TasksOutput> {
         return await sequelizeConn["models"]["Tasks"].create(payload);
     }
 
-    async update(payload: TasksInput): Promise<TasksOutput> {
-        await sequelizeConn["models"]["Tasks"].update(payload, {
-            where: {
-                id: payload.id
-            }
-        }
-        );
-
-        const updatedTask = await sequelizeConn["models"]["Tasks"].findOne({
-            where: {
-                id: payload.id
-            }
-        });
-        return updatedTask;
+    async update(payload: Partial<TasksInput>, query = {}): Promise<TasksOutput> {
+        return await sequelizeConn["models"]["Tasks"].update(payload, query);
     }
 
     async delete(taskId: number): Promise<TasksOutput> {
@@ -79,7 +92,7 @@ export class TaskDal {
     }
 
     async checkIfTaskExists(task_id: number): Promise<boolean> {
-        const task =  await sequelizeConn["models"]["Tasks"].findOne({
+        const task = await sequelizeConn["models"]["Tasks"].findOne({
             where: {
                 id: task_id
             }

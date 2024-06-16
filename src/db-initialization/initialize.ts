@@ -57,7 +57,7 @@ async function createDBConn(dbConfig: DbConfig): Promise<void> {
 			sequelizeConn["models"][model] = modelMap[model]["class"];
 		});
 		sequelizeConn["conn"].sync({ force: false });
+		Logger.info("Mysql Connection Initialised");
 	}
-	Logger.info("Mysql Connection Initialised");
 
 export { sequelizeConn, createDBConn };

@@ -1,22 +1,28 @@
 import Joi = require("joi");
-import { Priority, Status } from "../interfaces/Task";
+import { Priority, ReminderMethod, Status } from "../interfaces/Task";
 
 export const CreateUserValidationSchema = Joi.object({
     first_name: Joi.string().required(),
     last_name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
-    mobile: Joi.string().required()
+    mobile: Joi.string().required(),
+    reminder_enabled: Joi.boolean().default(false),
+    reminder_time: Joi.number().default(5),
+    reminder_method: Joi.string().valid(ReminderMethod.EMAIL, ReminderMethod.PUSH)
 }).unknown(false)
-.options({ abortEarly: false });
+    .options({ abortEarly: false });
 
 export const UpdateUserValidationSchema = Joi.object({
     first_name: Joi.string(),
     last_name: Joi.string(),
     password: Joi.string().min(8),
-    mobile: Joi.string()
+    mobile: Joi.string(),
+    reminder_enabled: Joi.boolean(),
+    reminder_time: Joi.number(),
+    reminder_method: Joi.string().valid(ReminderMethod.EMAIL, ReminderMethod.PUSH)
 }).unknown(false)
-.options({ abortEarly: false });
+    .options({ abortEarly: false });
 
 export const UserLoginValidationSchema = Joi.object({
     email: Joi.string().email().required(),
@@ -41,6 +47,7 @@ export const CreateTaskValidationSchema = Joi.object({
         .valid(...Object.values(Status))
         .default(Status.PENDING)
         .insensitive(),
+    reminder_sent: Joi.boolean().default(false)
 }).options({ abortEarly: false });
 
 export const UpdateTaskValidationSchema = Joi.object({
@@ -53,6 +60,7 @@ export const UpdateTaskValidationSchema = Joi.object({
     status: Joi.string()
         .valid(...Object.values(Status))
         .default(Status.PENDING),
+    reminder_sent: Joi.boolean()
 }).unknown(true)
     .options({ abortEarly: false });
 

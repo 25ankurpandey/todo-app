@@ -8,3 +8,8 @@ export enum Priority {
 	LOW = "low",
 	MEDIUM = "medium"
 }
+
+export enum ReminderMethod {
+	PUSH = "push",
+	EMAIL = "email"
+}

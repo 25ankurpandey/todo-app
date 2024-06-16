@@ -75,9 +75,70 @@ deployments:
     #       #   period: 60
     # pdb:
     #   minAvailable: 80%
+cronJobs:
+  - name: reminder-cronjob
+    schedule: "*/5 * * * *"
+    podLabels:
+      app: todo-svc-reminder-cron
+      type: cron
+    concurrencyPolicy: Replace
+    backoffLimit: 2
+    startingDeadlineSeconds: 270
+    successfulJobsHistoryLimit: 5
+    containers:
+      - name: reminderjob
+        imageName: todosvc
+        imageTag: v0.0.1
+        imagePullPolicy: Always
+        configMapName: todosvcjob-configmap
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo "UPDATE COMPLETE"
+            npm run serve-cron send-reminder
+            echo "REMINDER JOB DONE"
+        resources:
+          requests:
+            cpu: 500m
+            memory: 500Mi
+          limits:
+            cpu: 600m
+            memory: 1000Mi
+    
+    restartPolicy: OnFailure
+    affinity:
+      nodeAffinityLabels:
+        - name: environment
+          value: dev
+      podAntiAffinity:
+        type: preferred
+        labels:
+          - name: environment
+            value: dev
 
 configMaps:
   - name: todosvc-configmap
+    data:
+      "conf": |
+        "DEBUG": true
+        "ENVIRONMENT": "development"
+      LOG_LEVEL: "debug"
+      ENVIRONMENT: "development"
+      NODE_ENV: "local"
+      SLA_MS: 100
+      REQUEST_AUDIT_ENABLED: true
+      AEROSPIKE_MAX_CONN_PER_NODE: 10
+      AEROSPIKE_READ_POLICY_MAX_RETRIES: 2
+      AEROSPIKE_WRITE_POLICY_MAX_RETRIES: 0
+      AEROSPIKE_MAX_COMMANDS_IN_PROCESS: 10
+      AEROSPIKE_MAX_COMMANDS_IN_QUEUE: 10
+      TODO_SVC_CONFIG_HOST: https://config2.free.beeceptor.com
+      EXPOSE_PORT: true
+      TODO_SVC_PORT: 3010
+      JWT_SECRET: your_jwt_secret
+      SALT_ROUNDS: 10
+  - name: todosvcjob-configmap
     data:
       "conf": |
         "DEBUG": true
