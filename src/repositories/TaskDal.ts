@@ -17,6 +17,8 @@ export class TaskDal {
         const whereStatement = {
             user_id: ReqContextManager.getUserMeta().id
         };
+
+        //orderStatement object is used to sort(order) tasks by any supported field
         let orderStatement = [["created_at", options.filters.sort]];
         if (options.filters.sort_by) {
             orderStatement = [[options.filters.sort_by, options.filters.sort]];
@@ -36,6 +38,8 @@ export class TaskDal {
             delete filters["date"];
         }
         Object.assign(whereStatement, filters);
+
+        // Sequelize automatically handles sorting, uses `order` parameter fot sorting
         const query = {
             where: whereStatement,
             order: orderStatement,

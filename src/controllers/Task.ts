@@ -19,35 +19,33 @@ export class TaskController extends BaseController {
         super();
     }
 
+    //Get tasks for a user. Supports filtering and sorting of tasks
     @httpGet("/")
-    public async getTask(req: Request, res: Response): Promise<void> {
+    public async getTaskWithFilterAndSorting(req: Request, res: Response): Promise<void> {
         try {
             const query = await FiltersValidationSchema.validateAsync(req.query);
             const page_no = query.page_no ? query.page_no : null;
             const page_size = query.page_size ? query.page_size : null;
-            const tasks = await this.taskService.fetchTask(query);
-            const statusFilters = Object.values(Status);
-            const priorityFilters = Object.values(Priority);
+            const tasks = await this.taskService.fetchAndFilterAndSortTasks(query);
+            let response;
+
             if (page_no || page_size) {
-                const response = getFormattedPagingData(tasks, page_size, page_no);
-                Object.assign(response, {status_filter: statusFilters, priority_filter: priorityFilters});
-                res.send(response);
+                response = getFormattedPagingData(tasks, page_size, page_no);
             }
             else {
                 const { count: totalCount, rows: data } = tasks;
                 const currentPage = page_no;
                 const finalPageSize = page_size;
-                res.send({
+                response = {
                     data: data,
                     meta: {
                         total_count: totalCount,
                         page_size: finalPageSize,
                         page_no: currentPage,
-                    },
-                    status_filter: statusFilters, 
-                    priority_filter: priorityFilters
-                });
+                    }
+                };
             }
+            res.send(response);
         } catch (err) {
             if (err.name === "ValidationError") {
                 ErrUtils.throwValidationError("Validation error", err.details);
@@ -55,10 +53,27 @@ export class TaskController extends BaseController {
                 Logger.error(err, "400", "CREATE_TASK_ERROR");
                 throw err;
             }
-
         }
     }
 
+    // Get supported filters and their values
+    @httpGet("/filters")
+    public async getTaskFilters(req: Request, res: Response): Promise<void> {
+        try {
+            const filtersObj = await this.taskService.getTaskFilters();
+            const response = { filters: filtersObj }
+            res.send(response);
+        } catch (err) {
+            if (err.name === "ValidationError") {
+                ErrUtils.throwValidationError("Validation error", err.details);
+            } else {
+                Logger.error(err, "400", "CREATE_TASK_ERROR");
+                throw err;
+            }
+        }
+    }
+
+    //Create a task
     @httpPut("/create")
     public async createTask(req: Request, res: Response): Promise<void> {
         try {
@@ -76,8 +91,9 @@ export class TaskController extends BaseController {
         }
     }
 
+    //Update an existing task 
     @httpPatch("/update/:id")
-    public async updateUser(req: Request, res: Response): Promise<void> {
+    public async updateTask(req: Request, res: Response): Promise<void> {
         try {
             const task_id = parseInt(req.params.id);
             req.body["id"] = task_id;
@@ -95,8 +111,9 @@ export class TaskController extends BaseController {
         }
     }
 
+    //Delete an existing task
     @httpDelete("/delete/:id")
-    public async deleteUser(req: Request, res: Response): Promise<void> {
+    public async deleteTask(req: Request, res: Response): Promise<void> {
         try {
             const task_id = parseInt(req.params.id);
             const response = await this.taskService.deleteTask(task_id);

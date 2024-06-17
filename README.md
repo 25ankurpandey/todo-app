@@ -6,14 +6,14 @@ Welcome to the Todo List Application! This project is a fully functional, highly
 
 ## Key Features
 
-- **RESTful API (Create, Read, Update, Delete):**  Robust API built with Node.js and Express for reliable task management.
+- **RESTful API (Create, Read, Update, Delete):**  Robust API built with Node.js and Express for reliable task management(APIs for user signup, user login, user logout, add task, update task, delete task, fetch tasks(includes task filtering and sorting as well) and an API to fetch supported filters).
 - **Aerospike Caching:**  Intelligent caching with Aerospike enhances application performance for quick access to frequently used tasks.
 - **Dependency Injection:**  Modular and maintainable code architecture for easy customization and future enhancements.
 - **Validation & Error Handling:**  Ensures data integrity and provides clear feedback to users.
 - **Pagination:**  Efficiently handles large datasets for optimal browsing and navigation.
 - **Thoroughly Tested:**  Comprehensive unit tests for critical components guarantee reliability.
 - **Security-Conscious:**  Includes basic security measures to protect your data.
-- **User Authentication & Authorization:**  Secure your tasks with login/signup functionality and control who can view/edit them.
+- **User Authentication & Authorization:**  Secure your tasks with login/signup functionality and control who can view/edit them(Uses JWT whitelisting for authentication, role based authorization, etc).
 - **Due Dates & Reminders:**  Customizable due dates and timely reminders.
 - **Task Sorting & Searching:**  Effortlessly organize and find tasks with intuitive sorting and search capabilities.
 

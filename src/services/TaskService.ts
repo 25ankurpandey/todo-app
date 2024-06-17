@@ -7,6 +7,7 @@ import { ErrUtils } from "../utils/ErrUtils";
 import { TasksInput } from "../models/Tasks";
 import { ReqContextManager } from "../utils/context/ReqContextManager";
 import { getPagination } from "../utils/util";
+import { Priority, Status } from "../interfaces/Task";
 
 @provideSingleton(TaskService)
 export class TaskService extends BaseService {
@@ -20,7 +21,11 @@ export class TaskService extends BaseService {
         super();
     }
 
-    async fetchTask(filters: { [s: string]: any }): Promise<any> {
+    /* 
+    Below function fetches tasks for a user and also has sorting and filtering capabilities 
+    */
+
+    async fetchAndFilterAndSortTasks(filters: { [s: string]: any }): Promise<any> {
         try {
             Logger.info("Fetch task...");
             const options: { [s: string]: any } = {};
@@ -37,6 +42,24 @@ export class TaskService extends BaseService {
         }
         catch (err) {
             Logger.error(err, "", "FETCH_TASK_ERROR");
+            ErrUtils.throwSystemError("SYSTEM_ERR", { message: err.message });
+        }
+    }
+
+    // Function to fetch supported filters
+    async getTaskFilters(): Promise<any> {
+        try {
+            Logger.info("Task filters...");
+            const statusFilters = Object.values(Status);
+            const priorityFilters = Object.values(Priority);
+            const filtersObj = {
+                status_filter: statusFilters,
+                priority_filter: priorityFilters
+            };
+            return filtersObj;
+        }
+        catch (err) {
+            Logger.error(err, "", "FETCH_FILTERS_ERROR");
             ErrUtils.throwSystemError("SYSTEM_ERR", { message: err.message });
         }
     }

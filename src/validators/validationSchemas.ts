@@ -64,6 +64,12 @@ export const UpdateTaskValidationSchema = Joi.object({
 }).unknown(true)
     .options({ abortEarly: false });
 
+
+/* 
+Below validation schema provides validation for both filters ans sort parameters 
+and sorts records in Ascending by default based on a default field 
+if user tries to sort without specifying a field to sort by 
+*/
 export const FiltersValidationSchema = Joi.object({
     page_no: Joi.number().integer().min(1).optional(),
     page_size: Joi.number().integer().min(1).optional(),
