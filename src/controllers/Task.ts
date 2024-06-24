@@ -6,7 +6,7 @@ import { Constants } from "../constants/Constants";
 import { BaseController } from "./Base";
 import { ErrUtils } from "../utils/ErrUtils";
 import { TaskService } from "../services/TaskService";
-import { CreateTaskValidationSchema, UpdateTaskValidationSchema, FiltersValidationSchema } from "../validators/validationSchemas";
+import { CreateTaskValidationSchema, UpdateTaskValidationSchema, FilterAndSortBysValidationSchema } from "../validators/validationSchemas";
 import { getFormattedPagingData } from "../utils/util";
 import { Priority, Status } from "../interfaces/Task";
 
@@ -23,7 +23,7 @@ export class TaskController extends BaseController {
     @httpGet("/")
     public async getTaskWithFilterAndSorting(req: Request, res: Response): Promise<void> {
         try {
-            const query = await FiltersValidationSchema.validateAsync(req.query);
+            const query = await FilterAndSortBysValidationSchema.validateAsync(req.query);
             const page_no = query.page_no ? query.page_no : null;
             const page_size = query.page_size ? query.page_size : null;
             const tasks = await this.taskService.fetchAndFilterAndSortTasks(query);
@@ -58,16 +58,15 @@ export class TaskController extends BaseController {
 
     // Get supported filters and their values
     @httpGet("/filters")
-    public async getTaskFilters(req: Request, res: Response): Promise<void> {
+    public async getTaskFiltersAndSortByOptions(req: Request, res: Response): Promise<void> {
         try {
-            const filtersObj = await this.taskService.getTaskFilters();
-            const response = { filters: filtersObj }
-            res.send(response);
+            const responseObj = await this.taskService.getTaskFiltersAndSortByOptions();
+            res.send(responseObj);
         } catch (err) {
             if (err.name === "ValidationError") {
                 ErrUtils.throwValidationError("Validation error", err.details);
             } else {
-                Logger.error(err, "400", "CREATE_TASK_ERROR");
+                Logger.error(err, "400", "GET_FILTERS_ERROR");
                 throw err;
             }
         }

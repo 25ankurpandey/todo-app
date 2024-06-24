@@ -14,7 +14,7 @@ export const tryCatchWrapper = async function (task): Promise<any[]> {
 
 export function generateToken(data: any): string {
     const dataToSign = typeof data === "string" ? { data } : data;
-    const token = jwt.sign(dataToSign, process.env.JWT_SECRET, { expiresIn: Constants.jwtExpiration });
+    const token = jwt.sign(dataToSign, process.env.JWT_SECRET, { expiresIn: Constants.Jwt_Token_Expiration });
     AuthenticationMiddleware.addToWhitelist(token);
     return token;
 }

@@ -11,5 +11,7 @@ export class Constants {
     };
     public static Svc_Config_Host = "TODO_SVC_CONFIG_HOST";
     public static Svc_Config_Uri = "/config";
-    public static jwtExpiration = "1h";
+    public static Jwt_Token_Expiration = "1h";
+    public static Valid_Sort_By_Options = ["created_at", "priority"];
+    public static Valid_Sorting_Strategies = ["ASC", "DESC"];
 }

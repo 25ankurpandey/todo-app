@@ -1,5 +1,6 @@
 import Joi = require("joi");
 import { Priority, ReminderMethod, Status } from "../interfaces/Task";
+import { Constants } from "../constants/Constants";
 
 export const CreateUserValidationSchema = Joi.object({
     first_name: Joi.string().required(),
@@ -70,7 +71,7 @@ Below validation schema provides validation for both filters ans sort parameters
 and sorts records in Ascending by default based on a default field 
 if user tries to sort without specifying a field to sort by 
 */
-export const FiltersValidationSchema = Joi.object({
+export const FilterAndSortBysValidationSchema = Joi.object({
     page_no: Joi.number().integer().min(1).optional(),
     page_size: Joi.number().integer().min(1).optional(),
     created_at: Joi.date(),
@@ -78,9 +79,8 @@ export const FiltersValidationSchema = Joi.object({
         .valid(...Object.values(Status)),
     priority: Joi.string()
         .valid(...Object.values(Priority)),
-    sort: Joi.string().valid("ASC", "DESC").default("ASC").insensitive(),
-    sort_by: Joi.string().valid("created_at",
-        "priority").optional()
+    sort: Joi.string().valid(Constants.Valid_Sorting_Strategies).default(Constants.Valid_Sorting_Strategies[0]).insensitive(),
+    sort_by: Joi.string().valid(Constants.Valid_Sort_By_Options).optional()
 }).unknown(true)
     .options({ abortEarly: false });
 

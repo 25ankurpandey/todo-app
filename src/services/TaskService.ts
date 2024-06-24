@@ -8,6 +8,8 @@ import { TasksInput } from "../models/Tasks";
 import { ReqContextManager } from "../utils/context/ReqContextManager";
 import { getPagination } from "../utils/util";
 import { Priority, Status } from "../interfaces/Task";
+import { Constants } from "../constants/Constants";
+import { filter } from "lodash";
 
 @provideSingleton(TaskService)
 export class TaskService extends BaseService {
@@ -46,17 +48,23 @@ export class TaskService extends BaseService {
         }
     }
 
-    // Function to fetch supported filters
-    async getTaskFilters(): Promise<any> {
+    // Function to fetch supported filters and sort by options
+    async getTaskFiltersAndSortByOptions(): Promise<any> {
         try {
-            Logger.info("Task filters...");
+            Logger.info("Task filters and sort by options...");
             const statusFilters = Object.values(Status);
             const priorityFilters = Object.values(Priority);
             const filtersObj = {
                 status_filter: statusFilters,
                 priority_filter: priorityFilters
             };
-            return filtersObj;
+            const sortingStrategies = Constants.Valid_Sorting_Strategies;
+            const sortByOptions = Constants.Valid_Sort_By_Options;
+            const sortObj = {
+                sorting_strategy: sortingStrategies,
+                sort_by: sortByOptions
+            };
+            return {filter: filtersObj, sort: sortObj};
         }
         catch (err) {
             Logger.error(err, "", "FETCH_FILTERS_ERROR");
