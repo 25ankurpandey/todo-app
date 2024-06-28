@@ -9,12 +9,14 @@ Welcome to the Todo List Application!
 - Includes deployment scripts and environment specific Helm charts for automating deployment.
 - Contains various middlewares that automatically & efficiently handle authentication, authorization and request-response activity management for each HTTP request.
 - Has its own utilities that handle Context Management, Error handling, Logging, Caching and HTTP requests effortlessly.
+- Provides application monitoring enabled via New Relic.
 - Contains a comprehensive Swagger API Documentation for developers.
 
 ## Key Features
 
 - **RESTful API (Create, Read, Update, Delete):**  Robust API built with Node.js and Express for reliable task management(APIs for user signup, user login, user logout, add task, update task, delete task, fetch tasks(includes task filtering and sorting as well) and an API to fetch supported filters).
 - **Aerospike Caching:**  Intelligent caching with Aerospike enhances application performance for quick access to frequently used tasks.
+- **Application Monitoring:**  Inbuilt application monitorimg using New Relic, providing access to all real-time metrics of the application and to numerous other features on the New Relic Dashboard.
 - **Dependency Injection:**  Modular and maintainable code architecture for easy customization and future enhancements.
 - **Validation & Error Handling:**  Ensures data integrity and provides clear feedback to users.
 - **Pagination:**  Efficiently handles large datasets for optimal browsing and navigation.
@@ -48,3 +50,7 @@ Welcome to the Todo List Application!
 ## API Endpoints
 - You can interact with the API using tools like Postman or cURL. The base URL for the API is http://localhost:3000/todo-svc/v1
 - For detailed API documentation, refer to the API Documentation in the repo's apidoc.json(https://github.com/25ankurpandey/todo-app/blob/main/apidoc.json). Use http://editor.swagger.io to render the apidoc.json
+
+## Monitoring(New Relic)
+- Create a new New Relic Key(https://newrelic.com/).
+- Follow the instructions on the website to install and enable New Relic on your server machine for real-time application metrics.
