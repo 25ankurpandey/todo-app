@@ -14,7 +14,7 @@ else
     exit 1
 fi
 
-if [ ! -d "$HOME/tpl-serviceability-svc" ]; then
+if [ ! -d "$HOME/todo-svc" ]; then
     echo "No such directory: $HOME/todosvc/"
     exit 1
 fi
