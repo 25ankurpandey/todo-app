@@ -16,7 +16,7 @@ Welcome to the Todo List Application!
 
 - **RESTful API (Create, Read, Update, Delete):**  Robust API built with Node.js and Express for reliable task management(APIs for user signup, user login, user logout, add task, update task, delete task, fetch tasks(includes task filtering and sorting as well) and an API to fetch supported filters).
 - **Aerospike Caching:**  Intelligent caching with Aerospike enhances application performance for quick access to frequently used tasks.
-- **Application Monitoring:**  Inbuilt application monitorimg using New Relic, providing access to all real-time metrics of the application and to numerous other features on the New Relic Dashboard.
+- **Application Monitoring:**  Inbuilt application monitoring using New Relic, providing access to all real-time metrics of the application and to numerous other features on the New Relic Dashboard.
 - **Dependency Injection:**  Modular and maintainable code architecture for easy customization and future enhancements.
 - **Validation & Error Handling:**  Ensures data integrity and provides clear feedback to users.
 - **Pagination:**  Efficiently handles large datasets for optimal browsing and navigation.
