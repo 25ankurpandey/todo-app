@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Welcome to the Todo List Application! This project is a fully functional, highly scalable, and production-ready to-do list application. It provides a RESTful API to handle CRUD (Create, Read, Update, Delete) operations for tasks, implements robust server-side validation, has user authentication and authorization and includes comprehensive swagger api documentation and deployment scripts and environment specific helm charts for automating deployment of the application. It contains various middlewares that automatically & efficiently handle authentication, authorization and request-response activity management for each request. It also has its own utilities that handle context management, Error handling, Logging, Caching and Http requests effortlessly.
+Welcome to the Todo List Application! This project is a fully functional, highly scalable, and production-ready to-do list application. It provides a RESTful API to handle CRUD (Create, Read, Update, Delete) operations for tasks, implements robust server-side validation, has user authentication and authorization and includes deployment scripts, environment specific helm charts for automating deployment of the application and a comprehensive swagger api documentation. It contains various middlewares that automatically & efficiently handle authentication, authorization and request-response activity management for each request. It also has its own utilities that handle context management, Error handling, Logging, Caching and Http requests effortlessly.
 
 ## Key Features
 
