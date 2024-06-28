@@ -9,7 +9,7 @@ Welcome to the Todo List Application!
 - Includes deployment scripts and environment specific Helm charts for automating deployment.
 - Contains various middlewares that automatically & efficiently handle authentication, authorization and request-response activity management for each HTTP request.
 - Has its own utilities that handle Context Management, Error handling, Logging, Caching and HTTP requests effortlessly.
-- Provides application monitoring enabled via New Relic.
+- Provides real-time application monitoring enabled via New Relic.
 - Contains a comprehensive Swagger API Documentation for developers.
 
 ## Key Features
