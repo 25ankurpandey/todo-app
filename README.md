@@ -5,7 +5,7 @@
 Welcome to the Todo List Application! 
 - This project is a fully functional, highly scalable, and production-ready to-do list application.
 - It provides a RESTful API to handle CRUD (Create, Read, Update, Delete) operations for tasks and APIs for User Sign up, Login and Logout.
-- Implements robust server-side validation and also provides functionality for user authentication and authorization.
+- Implements robust server-side validation and also provides functionality for user authentication(JWT) and authorization.
 - Includes deployment scripts, environment specific Helm charts and a Dockerfile for automating the deployment process.
 - Contains various middlewares that automatically & efficiently handle authentication, authorization and request-response activity management for each HTTP request.
 - Has its own utilities that handle Context Management, Error handling, Logging, Caching and HTTP requests effortlessly.
